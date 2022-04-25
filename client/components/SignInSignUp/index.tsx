@@ -1,22 +1,19 @@
-import React, { ReactNode } from "react";
+import React, { FormEvent, ReactNode } from "react";
 import styles from "./styles.module.scss";
-import Layout from "../../components/Layout";
 
 type SignFormProps = {
   title: string;
-  action: string;
+  onSubmit(e: FormEvent<HTMLFormElement>): any;
   children: ReactNode;
 };
 
-const SignForm = ({ children, title, action }: SignFormProps) => (
-  <Layout>
-    <div className={styles.position}>
-      <form className={styles.form} action={action}>
-        <h1>{title.toUpperCase()}</h1>
-        {children}
-      </form>
-    </div>
-  </Layout>
+const SignForm = ({ children, title, onSubmit }: SignFormProps) => (
+  <div className={styles.position}>
+    <form className={styles.form} onSubmit={onSubmit}>
+      <h1>{title.toUpperCase()}</h1>
+      {children}
+    </form>
+  </div>
 );
 
 export default SignForm;
