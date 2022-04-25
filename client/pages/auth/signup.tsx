@@ -1,5 +1,5 @@
 import type { NextPage } from "next";
-import { useState, FormEvent, useEffect } from "react";
+import { useState, useEffect, FormEvent } from "react";
 import Link from "next/link";
 import Router from "next/router";
 
@@ -29,7 +29,7 @@ const SignUp: NextPage = () => {
         question: "",
         answer: "",
       });
-  });
+  }, []);
 
   const { doRequest, errors } = useRequest({
     url: "/api/users/signup",
@@ -59,7 +59,7 @@ const SignUp: NextPage = () => {
       <FormInput
         type="text"
         label="Display Name"
-        fieldName="displayName"
+        id="displayName"
         value={formInput.displayName}
         onChange={(e) =>
           setFormInput({ ...formInput, displayName: e.target.value })
@@ -68,14 +68,14 @@ const SignUp: NextPage = () => {
       <FormInput
         type="email"
         label="Email"
-        fieldName="email"
+        id="email"
         value={formInput.email}
         onChange={(e) => setFormInput({ ...formInput, email: e.target.value })}
       />
       <FormInput
         type="password"
         label="Password"
-        fieldName="password"
+        id="password"
         value={formInput.password}
         onChange={(e) =>
           setFormInput({ ...formInput, password: e.target.value })
@@ -84,7 +84,7 @@ const SignUp: NextPage = () => {
       <FormInput
         type="password"
         label="Comfirm Password"
-        fieldName="confirmPassword"
+        id="confirmPassword"
         value={formInput.confirmPassword}
         onChange={(e) =>
           setFormInput({ ...formInput, confirmPassword: e.target.value })
@@ -93,7 +93,7 @@ const SignUp: NextPage = () => {
       <FormInput
         type="text"
         label="Security Question"
-        fieldName="question"
+        id="question"
         value={formInput.question}
         onChange={(e) =>
           setFormInput({ ...formInput, question: e.target.value })
@@ -102,7 +102,7 @@ const SignUp: NextPage = () => {
       <FormInput
         type="text"
         label="Security Answer"
-        fieldName="answer"
+        id="answer"
         value={formInput.answer}
         onChange={(e) => setFormInput({ ...formInput, answer: e.target.value })}
       />

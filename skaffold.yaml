@@ -16,7 +16,7 @@ build:
         manual:
           - src: 'src/**/*.ts'
             dest: .
-    - image: type-reader-client
+    - image: auguestgao/type-reader-client
       context: client
       docker:
         dockerfile: Dockerfile

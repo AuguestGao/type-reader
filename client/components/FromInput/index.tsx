@@ -3,29 +3,23 @@ import { ChangeEvent } from "react";
 interface FormInputProps {
   type: string;
   label: string;
-  fieldName: string;
+  id: string;
   value: string;
   onChange(e: ChangeEvent<HTMLInputElement>): void;
 }
 
-const FormInput = ({
-  type,
-  label,
-  fieldName,
-  value,
-  onChange,
-}: FormInputProps) => {
+const FormInput = ({ type, label, id, value, onChange }: FormInputProps) => {
   return (
     <div className="form-floating mb-3">
       <input
         type={type}
         className="form-control"
-        id={fieldName}
+        id={id}
         value={value}
         placeholder={label}
         onChange={onChange}
       />
-      <label htmlFor={fieldName}>{label}</label>
+      <label htmlFor={id}>{label}</label>
     </div>
   );
 };
