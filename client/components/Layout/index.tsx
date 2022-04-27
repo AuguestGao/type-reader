@@ -1,6 +1,9 @@
 import React, { ReactNode } from "react";
 import Head from "next/head";
+
 import BGP from "../BGP";
+import Header from "../Header";
+
 import styles from "./styles.module.scss";
 
 type LayoutProps = {
@@ -16,6 +19,7 @@ const Layout = ({ children, title = "Type Reader" }: LayoutProps) => (
       <meta name="viewport" content="initial-scale=1.0, width=device-width" />
     </Head>
     <BGP />
+    <Header />
     {children}
   </div>
 );

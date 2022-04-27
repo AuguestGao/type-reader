@@ -6,6 +6,7 @@ import Router from "next/router";
 import useRequest from "../../hooks/use-request";
 import SignForm from "../../components/SignInSignUp";
 import FormInput from "../../components/FromInput";
+import { useAuth } from "../../context/user-context";
 
 import styles from "../../styles/Auth.module.scss";
 
@@ -19,7 +20,13 @@ const SignUp: NextPage = () => {
     answer: "",
   });
 
+  const { currentUser } = useAuth();
+
   useEffect(() => {
+    if (currentUser) {
+      Router.push("/");
+    }
+
     return () =>
       setFormInput({
         displayName: "",
@@ -106,6 +113,8 @@ const SignUp: NextPage = () => {
         value={formInput.answer}
         onChange={(e) => setFormInput({ ...formInput, answer: e.target.value })}
       />
+
+      <p>{errors}</p>
       <button type="submit" className="btn btn-primary w-100 mt-4">
         Sign up
       </button>

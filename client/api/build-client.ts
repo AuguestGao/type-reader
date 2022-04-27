@@ -1,12 +1,13 @@
-import axios, { AxiosRequestConfig } from "axios";
+import axios, { AxiosRequestHeaders } from "axios";
+import { GetServerSidePropsContext, NextApiRequest } from "next";
 
-const buildClient = ({ req }: { req: AxiosRequestConfig }) => {
-  if (typeof window === undefined) {
+const buildClient = (headers: AxiosRequestHeaders) => {
+  if (typeof window === "undefined") {
     // server request
     return axios.create({
       baseURL:
-        "http://ingress-nginx-controller.ingress-nginx.srv.cluster.local",
-      headers: req.headers,
+        "http://ingress-nginx-controller.ingress-nginx.svc.cluster.local",
+      headers,
     });
   } else {
     // client request

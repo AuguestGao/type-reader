@@ -4,6 +4,7 @@ import Link from "next/link";
 import Router from "next/router";
 
 import useRequest from "../../hooks/use-request";
+import { useAuth } from "../../context/user-context";
 
 import SignForm from "../../components/SignInSignUp";
 import FormInput from "../../components/FromInput";
@@ -15,7 +16,13 @@ const SignIn: NextPage = () => {
     password: "",
   });
 
+  const { currentUser } = useAuth();
+
   useEffect(() => {
+    if (currentUser) {
+      Router.push("/");
+    }
+
     return () =>
       setFormInput({
         email: "",
@@ -63,6 +70,8 @@ const SignIn: NextPage = () => {
       <p className={styles.forgotPassword}>
         <Link href="/auth/forgotpassword">Forgot password?</Link>{" "}
       </p>
+
+      <pre>{errors}</pre>
 
       <button type="submit" className="btn btn-primary w-100 mt-4">
         Sign in

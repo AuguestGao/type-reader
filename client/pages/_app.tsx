@@ -1,16 +1,19 @@
 import type { AppProps } from "next/app";
 
 import Layout from "../components/Layout";
+import { AuthProvider } from "../context/user-context";
 
 import "bootstrap/dist/css/bootstrap.css";
 import "../styles/globals.scss";
 
-function App({ Component, pageProps }: AppProps) {
+const MyApp = ({ Component, pageProps }: AppProps) => {
   return (
-    <Layout>
-      <Component {...pageProps} />
-    </Layout>
+    <AuthProvider>
+      <Layout>
+        <Component {...pageProps} />
+      </Layout>
+    </AuthProvider>
   );
-}
+};
 
-export default App;
+export default MyApp;
