@@ -8,7 +8,7 @@ interface RequestProps {
   url: string;
   method: Method;
   body: object;
-  onSuccess?: (response: AxiosResponse) => void;
+  onSuccess: (data: any) => void;
 }
 
 const useRequest = ({ url, method, body, onSuccess }: RequestProps) => {

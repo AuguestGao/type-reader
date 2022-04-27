@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { useAuth } from "../../context/user-context";
+import Image from "next/image";
 
 import styles from "./styles.module.scss";
 
