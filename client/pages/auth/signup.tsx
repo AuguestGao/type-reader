@@ -36,7 +36,7 @@ const SignUp: NextPage = () => {
         question: "",
         answer: "",
       });
-  }, []);
+  }, [currentUser]);
 
   const { doRequest, errors } = useRequest({
     url: "/api/users/signup",

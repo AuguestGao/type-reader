@@ -1,14 +1,34 @@
 .navWrap {
   margin: 0 4rem;
+  padding: 1rem;
   display:flex;
   flex-direction: row;
   justify-content: space-between;
+  align-items: center;
+  font-size: 1.5rem;
+  border-bottom: 1px solid darkslateblue;
 }
 
 .logo {
   color: white;
+  animation: glow 5s ease-in-out infinite alternate
 }
 
 .auth {
   color: white;
+  transition: all .2s ease-in-out;
+}
+
+.auth:hover {
+  transform:scale(1.1);
+}
+
+@keyframes glow {
+  from {
+    text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px #e60073, 0 0 20px #e60073, 0 0 30px #e60073, 0 0 40px #e60073;
+  }
+  
+  to {
+    text-shadow: 0 0 50px #fff, 0 0 10px #ff4da6, 0 0 15px #ff4da6, 0 0 20px #ff4da6, 0 0 30px #ff4da6, 0 0 40px #ff4da6;
+  }
 }
