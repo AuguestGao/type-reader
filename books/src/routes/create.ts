@@ -20,7 +20,7 @@ router.post(
       title,
       body,
       userId: req.currentUser!.id,
-      author,
+      author: author ? author : "Unknown",
     });
     await book.save();
 
@@ -28,4 +28,4 @@ router.post(
   }
 );
 
-export { router as newBookRouter };
+export { router as createBookRouter };

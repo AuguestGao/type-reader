@@ -11,8 +11,6 @@ declare global {
 let mongo: any;
 
 beforeAll(async () => {
-  jest.setTimeout(5000);
-
   process.env.JWT_KEY = "1234";
 
   mongo = new MongoMemoryServer();
@@ -50,5 +48,7 @@ global.getSignInCookie = () => {
 
   const base64 = Buffer.from(sessionJson).toString("base64");
 
-  return [`express:sess=${base64}`];
+  // console.log(base64);
+
+  return [`session=${base64}`];
 };
