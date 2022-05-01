@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: books-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: books
+  template:
+    metadata:
+      labels:
+        app: books
+    spec:
+      containers:
+        - name: books
+          image: auguestgao/type-reader-books
+          env:
+            - name: MONGO_URI
+              value: "mongodb://books-mongo-srv:27017/books"
+            - name: JWT_KEY
+              valueFrom: 
+                secretKeyRef:
+                  name: tr-jwt
+                  key: JWT_KEY
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: books-srv
+spec:
+  selector:
+    app: books
+  ports:
+    - name: books
+      protocol: TCP
+      port: 3000
+      targetPort: 3000

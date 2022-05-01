@@ -24,3 +24,11 @@ build:
         manual:
           - src: '**/*.ts'
             dest: .
+    - image: auguestgao/type-reader-books
+      context: books
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: 'src/**/*.ts'
+            dest: .
