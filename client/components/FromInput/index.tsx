@@ -1,14 +1,6 @@
-import { ChangeEvent } from "react";
+import { IFormField } from "../../@types/book";
 
-interface FormInputProps {
-  type: string;
-  label: string;
-  id: string;
-  value: string;
-  onChange(e: ChangeEvent<HTMLInputElement>): void;
-}
-
-const FormInput = ({ type, label, id, value, onChange }: FormInputProps) => {
+const FormInput = ({ type, label, id, value, onChange }: IFormField) => {
   return (
     <div className="form-floating mb-3">
       <input

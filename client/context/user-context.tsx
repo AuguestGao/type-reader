@@ -1,5 +1,5 @@
 import { createContext, useState, ReactNode, useContext } from "react";
-import { TCurrentUser, TUser } from "../@types/auth";
+import { TCurrentUser } from "../@types/auth";
 
 interface TAuthContext {
   currentUser: TCurrentUser | null;

@@ -1,0 +1,17 @@
+.textile {
+  width:70%;
+  max-width: 1080px;
+  border-radius: 0.75rem;
+  background: rgba(88, 95, 100, 0.4);
+  margin: 4rem auto;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+
+.textile  > h1 {
+  text-align: center;
+  color: white;
+}

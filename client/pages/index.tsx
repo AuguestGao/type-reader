@@ -36,6 +36,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       },
     };
   } catch (err) {
+    // ! delete before deploy
     console.log(err);
   }
 

@@ -1,8 +1,8 @@
-export interface TUser {
+export interface IUser {
   id: string;
   displayName: string;
 }
 
 export interface TCurrentUser {
-  currentUser: TUser | null;
+  currentUser: IUser | null;
 }

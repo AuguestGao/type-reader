@@ -7,18 +7,33 @@ const Header = () => {
   const { currentUser } = useAuth();
 
   return (
-    <div className={styles.navWrap}>
+    <nav className={styles.navWrap}>
       <div className={styles.logo}>
         <Link href="/">Type Reader</Link>
       </div>
-      <div className={styles.auth}>
+      <ul className="nav justify-content-end">
         {currentUser ? (
-          <Link href="/auth/signout">Sign Out</Link>
+          <>
+            <li className="nav-item">
+              <Link href="/books" passHref>
+                <a className={styles.link} aria-current="page">
+                  Books
+                </a>
+              </Link>
+            </li>
+            <li className="nav-item">
+              <Link href="/auth/signout" passHref>
+                <a className={styles.link} aria-current="page">
+                  Sign Out
+                </a>
+              </Link>
+            </li>
+          </>
         ) : (
           <Link href="/auth/signin">Sign In</Link>
         )}
-      </div>
-    </div>
+      </ul>
+    </nav>
   );
 };
 
