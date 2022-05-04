@@ -71,7 +71,7 @@ const SignIn: NextPage = () => {
         <Link href="/auth/forgotpassword">Forgot password?</Link>{" "}
       </p>
 
-      <pre>{errors}</pre>
+      <div>{errors}</div>
 
       <button type="submit" className="btn btn-primary w-100 mt-4">
         Sign in

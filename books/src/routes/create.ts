@@ -24,7 +24,7 @@ router.post(
     });
     await book.save();
 
-    res.status(201).send(`Saved new book: ${book.title}`);
+    res.status(201).send({ id: book._id });
   }
 );
 

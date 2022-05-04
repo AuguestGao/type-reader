@@ -1,4 +1,8 @@
-export type TCurrentUser = {
-  id?: string;
-  displayName?: string;
-};
+export interface IUser {
+  id: string;
+  displayName: string;
+}
+
+export interface TCurrentUser {
+  currentUser: IUser | null;
+}

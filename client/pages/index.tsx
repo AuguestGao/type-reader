@@ -6,15 +6,14 @@ import buildClient from "../api/build-client";
 import { TCurrentUser } from "../@types/auth";
 
 import styles from "../styles/Home.module.scss";
+import { useEffect } from "react";
 
-interface Props {
-  user: TCurrentUser | {};
-}
-
-const Home = ({ user }: Props) => {
-  // const { user, setUser } = useContext(AppContext) as AppState;
+const Home = ({ user }: { user: TCurrentUser }) => {
   const { currentUser, setCurrentUser } = useAuth();
-  setCurrentUser(user);
+
+  useEffect(() => {
+    setCurrentUser(user);
+  }, []);
 
   return (
     <>
@@ -37,12 +36,13 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       },
     };
   } catch (err) {
+    // ! delete before deploy
     console.log(err);
   }
 
   return {
     props: {
-      user: {},
+      user: null,
     },
   };
 };
