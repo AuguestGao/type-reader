@@ -1,5 +1,6 @@
 import request from "supertest";
 import { app } from "../../app";
+import { natsWrapper } from "../../nats-wrapper";
 
 it("returns a 400 with invalid display name", async () => {
   // no displayName
@@ -153,4 +154,20 @@ it("returns a 201 on a successful sign up", async () => {
     .expect(201);
 
   expect(response.get("Set-Cookie")).toBeDefined();
+});
+
+it("publishs an event", async () => {
+  await request(app)
+    .post("/api/users/signup")
+    .send({
+      displayName: "john1",
+      email: "john@test.com",
+      password: "password",
+      confirmPassword: "password",
+      question: "question",
+      answer: "answer",
+    })
+    .expect(201);
+
+  expect(natsWrapper.client.publish).toHaveBeenCalled();
 });
