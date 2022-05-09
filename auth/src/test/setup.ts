@@ -8,6 +8,8 @@ declare global {
   function getForgotPasswordCookie(): Promise<string[]>;
 }
 
+jest.mock("../nats-wrapper.ts");
+
 let mongo: any;
 
 beforeAll(async () => {
@@ -23,6 +25,9 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
+  // clear mock implementations
+  jest.clearAllMocks();
+
   // reset entire db before each test
   const collections = await mongoose.connection.db.collections();
   for (let collection of collections) {

@@ -3,6 +3,8 @@ import { body } from "express-validator";
 import jwt from "jsonwebtoken";
 
 import { validateRequest, BadRequestError } from "@type-reader/common";
+import { UserCreatedPublisher } from "../events/publisher/user-created-publisher";
+import { natsWrapper } from "../nats-wrapper";
 
 import { User } from "../models/user";
 
@@ -48,6 +50,10 @@ router.post(
 
     const user = User.build({ displayName, email, password, question, answer });
     await user.save();
+
+    new UserCreatedPublisher(natsWrapper.client).publish({
+      id: user.id,
+    });
 
     const userJwt = jwt.sign(
       {
