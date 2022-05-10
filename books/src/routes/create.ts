@@ -2,6 +2,8 @@ import { Router, Request, Response } from "express";
 import { body } from "express-validator";
 import { requireAuth, validateRequest } from "@type-reader/common";
 
+import { BookCreatedPublisher } from "../events/publisher/book-created-publisher";
+import { natsWrapper } from "../nats-wrapper";
 import { Book } from "../model/book";
 
 const router = Router();
@@ -23,6 +25,11 @@ router.post(
       author: author ? author : "Unknown",
     });
     await book.save();
+
+    new BookCreatedPublisher(natsWrapper.client).publish({
+      id: book.id,
+      userId: book.userId,
+    });
 
     res.status(201).send({ id: book._id });
   }
