@@ -1,8 +1,13 @@
 import { Router, Request, Response } from "express";
-import { body } from "express-validator";
-import { requireAuth, validateRequest } from "@type-reader/common";
+import {
+  NotAuthorizedError,
+  NotFoundError,
+  requireAuth,
+} from "@type-reader/common";
 
 import { Book } from "../model/book";
+import { natsWrapper } from "../nats-wrapper";
+import { BookDeletedPublisher } from "../events/publisher/book-deleted-publisher";
 
 const router = Router();
 
@@ -11,11 +16,19 @@ router.delete(
   requireAuth,
   async (req: Request, res: Response) => {
     const book = await Book.findOneAndDelete({
-      userId: req.currentUser!.id,
       _id: req.params.id,
+      userId: req.currentUser!.id,
     });
 
-    res.status(200).send(book);
+    if (!book) {
+      throw new NotFoundError();
+    }
+
+    new BookDeletedPublisher(natsWrapper.client).publish({
+      id: book._id,
+      userId: book.userId,
+    });
+    res.status(200).send(book._id);
   }
 );
 
