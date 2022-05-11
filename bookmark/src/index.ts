@@ -2,6 +2,8 @@ import mongoose from "mongoose";
 
 import { app } from "./app";
 import { natsWrapper } from "./nats-wrapper";
+import { BookCreatedListener } from "./events/listeners/book-created-listener";
+import { BookDeletedListener } from "./events/listeners/book-deleted-listener";
 
 const start = async () => {
   if (!process.env.NATS_CLUSTER_ID) {
@@ -34,6 +36,9 @@ const start = async () => {
     process.on("SIGINT", () => natsWrapper.client.close());
     process.on("SIGTERM", () => natsWrapper.client.close());
 
+    new BookCreatedListener(natsWrapper.client).listen();
+    new BookDeletedListener(natsWrapper.client).listen();
+
     await mongoose.connect(process.env.MONGO_URI);
     console.log("Connected to Mongo DB.");
   } catch (err) {
@@ -41,7 +46,7 @@ const start = async () => {
   }
 
   app.listen(3000, () => {
-    console.log("Books is listensing at port 3000!");
+    console.log("Bookmark is listensing at port 3000!");
   });
 };
 

@@ -1,28 +1,28 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: bookmark-mango-depl
+  name: bookmark-mongo-depl
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: bookmark-mango
+      app: bookmark-mongo
   template:
     metadata:
       labels:
-        app: bookmark-mango
+        app: bookmark-mongo
     spec:
       containers:
-        - name: bookmark-mango
+        - name: bookmark-mongo
           image: mongo
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: bookmark-mango-srv
+  name: bookmark-mongo-srv
 spec:
   selector:
-    app: bookmark-mango
+    app: bookmark-mongo
   ports:
     - name: db
       protocol: TCP

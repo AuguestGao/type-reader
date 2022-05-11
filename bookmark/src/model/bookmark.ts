@@ -3,12 +3,6 @@ import mongoose from "mongoose";
 interface IBookmarkAttrs {
   bookId: string;
   userId: string;
-  current: {
-    pageIndex: number;
-  };
-  prevText: string;
-  totalReadTime: number;
-  progress: number;
 }
 
 interface IBookmarkDoc extends mongoose.Document {
@@ -58,7 +52,15 @@ const bookmarkSchema = new mongoose.Schema(
 );
 
 bookmarkSchema.statics.build = (attrs: IBookmarkAttrs) => {
-  return new Bookmark(attrs);
+  return new Bookmark({
+    ...attrs,
+    current: {
+      pageIndex: 0,
+    },
+    prevText: "",
+    totalReadTime: 0,
+    progress: 0,
+  });
 };
 
 bookmarkSchema.methods.refresh = async function (

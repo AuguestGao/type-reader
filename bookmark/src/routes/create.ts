@@ -25,12 +25,6 @@ router.post(
     const bookmark = Bookmark.build({
       bookId,
       userId: req.currentUser!.id,
-      current: {
-        pageIndex: 0,
-      },
-      prevText: "",
-      totalReadTime: 0,
-      progress: 0,
     });
     await bookmark.save();
 
