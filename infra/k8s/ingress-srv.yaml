@@ -24,6 +24,13 @@ spec:
                 name: books-srv
                 port:
                   number: 3000
+          - path: /api/bookmark/?(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: bookmark-srv
+                port:
+                  number: 3000
           - path: /?(.*)
             pathType: Prefix
             backend:

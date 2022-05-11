@@ -25,7 +25,7 @@ router.delete(
     }
 
     new BookDeletedPublisher(natsWrapper.client).publish({
-      id: book._id,
+      bookId: book._id,
       userId: book.userId,
     });
     res.status(200).send(book._id);

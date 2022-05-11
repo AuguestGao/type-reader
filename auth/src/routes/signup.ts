@@ -52,7 +52,7 @@ router.post(
     await user.save();
 
     new UserCreatedPublisher(natsWrapper.client).publish({
-      id: user.id,
+      userId: user.id,
     });
 
     const userJwt = jwt.sign(
