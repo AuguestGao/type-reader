@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bookmark-mango-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bookmark-mango
+  template:
+    metadata:
+      labels:
+        app: bookmark-mango
+    spec:
+      containers:
+        - name: bookmark-mango
+          image: mongo
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bookmark-mango-srv
+spec:
+  selector:
+    app: bookmark-mango
+  ports:
+    - name: db
+      protocol: TCP
+      port: 27017
+      targetPort: 27017

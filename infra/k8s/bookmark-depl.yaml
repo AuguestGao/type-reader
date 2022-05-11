@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bookmark-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bookmark
+  template:
+    metadata:
+      labels:
+        app: bookmark
+    spec:
+      containers:
+        - name: bookmark
+          image: auguestgao/type-reader-bookmark
+          env:
+            - name: NATS_CLUSTER_ID
+              value: "type-reader"
+            - name: NATS_CLIENT_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: NATS_URL
+              value: "http://nats-srv:4222"
+            - name: MONGO_URI
+              value: "mongodb://bookmark-mongo-srv:27017/bookmark"
+            - name: JWT_KEY
+              valueFrom: 
+                secretKeyRef:
+                  name: tr-jwt
+                  key: JWT_KEY
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bookmark-srv
+spec:
+  selector:
+    app: bookmark
+  ports:
+    - name: bookmark
+      protocol: TCP
+      port: 3000
+      targetPort: 3000
