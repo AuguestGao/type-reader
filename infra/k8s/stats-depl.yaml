@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: stats-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: stats
+  template:
+    metadata:
+      labels:
+        app: stats
+    spec:
+      containers:
+        - name: stats
+          image: auguestgao/type-reader-stats
+          env:
+            - name: NATS_CLUSTER_ID
+              value: "type-reader"
+            - name: NATS_CLIENT_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: NATS_URL
+              value: "http://nats-srv:4222"
+            - name: MONGO_URI
+              value: "mongodb://stats-mongo-srv:27017/stats"
+            - name: JWT_KEY
+              valueFrom: 
+                secretKeyRef:
+                  name: tr-jwt
+                  key: JWT_KEY
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: stats-srv
+spec:
+  selector:
+    app: stats
+  ports:
+    - name: stats
+      protocol: TCP
+      port: 3000
+      targetPort: 3000

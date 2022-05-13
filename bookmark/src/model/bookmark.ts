@@ -12,9 +12,13 @@ interface IBookmarkDoc extends mongoose.Document {
     pageIndex: number;
   };
   prevText: string;
-  totalReadTime: number;
+  totalReadInSec: number;
   progress: number;
-  refresh(prevText: string, pageIndex: number, readTime: number): Promise<void>;
+  refresh(
+    prevText: string,
+    pageIndex: number,
+    readInSec: number
+  ): Promise<void>;
 }
 
 interface IBookmarkModel extends mongoose.Model<IBookmarkDoc> {
@@ -38,7 +42,7 @@ const bookmarkSchema = new mongoose.Schema(
       },
     },
     prevText: String,
-    totalReadTime: Number,
+    totalReadInSec: Number,
     progress: Number,
   },
   {
@@ -58,7 +62,7 @@ bookmarkSchema.statics.build = (attrs: IBookmarkAttrs) => {
       pageIndex: 0,
     },
     prevText: "",
-    totalReadTime: 0,
+    totalReadInSec: 0,
     progress: 0,
   });
 };
@@ -66,13 +70,13 @@ bookmarkSchema.statics.build = (attrs: IBookmarkAttrs) => {
 bookmarkSchema.methods.refresh = async function (
   prevText: string,
   pageIndex: number,
-  readTime: number
+  readInSec: number
 ) {
   const bookmark = this as IBookmarkDoc;
 
   bookmark.prevText = prevText;
   bookmark.current.pageIndex = pageIndex;
-  bookmark.totalReadTime += readTime;
+  bookmark.totalReadInSec += readInSec;
 
   await bookmark.save();
 };

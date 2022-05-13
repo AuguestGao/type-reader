@@ -23,11 +23,11 @@ router.patch(
       .withMessage("Invalid bookId"),
     body("prevText").not().isEmpty(),
     body("pageIndex").isInt({ min: 0 }),
-    body("readTime").isInt({ min: 0 }),
+    body("readInSec").isInt({ min: 0 }),
   ],
   validateRequest,
   async (req: Request, res: Response) => {
-    const { bookId, prevText, pageIndex, readTime } = req.body;
+    const { bookId, prevText, pageIndex, readInSec } = req.body;
 
     const bookmark = await Bookmark.findOne({
       bookId,
@@ -39,7 +39,7 @@ router.patch(
       throw new NotFoundError();
     }
 
-    await bookmark.refresh(prevText, pageIndex, readTime);
+    await bookmark.refresh(prevText, pageIndex, readInSec);
 
     // ? change res body
     res.status(200).send({});
