@@ -24,7 +24,7 @@ it("updates a bookmark when all is well", async () => {
       bookId,
       prevText: "first bookmark update",
       pageIndex: 1,
-      readTime: 10,
+      readInSec: 10,
     })
     .expect(200);
 
@@ -45,7 +45,7 @@ it("updates a bookmark when all is well", async () => {
       bookId,
       prevText: "second bookmark update",
       pageIndex: 5,
-      readTime: 102,
+      readInSec: 102,
     })
     .expect(200);
 
@@ -57,5 +57,5 @@ it("updates a bookmark when all is well", async () => {
     })
     .expect(200);
 
-  expect(res2.body.totalReadTime).toBe(112);
+  expect(res2.body.totalReadInSec).toBe(112);
 });
