@@ -41,6 +41,11 @@ router.post(
       .isInt()
       .custom((input: number) => input >= 0)
       .withMessage("Invalid entry"),
+    body("progress")
+      .notEmpty()
+      .isInt()
+      .custom((input: number) => input >= 0)
+      .withMessage("Invalid entry"),
     body("prevText").notEmpty(),
     body("pageIndex")
       .isInt({ min: 0 })
@@ -57,6 +62,7 @@ router.post(
       readInSec,
       prevText,
       pageIndex,
+      progress,
     } = req.body;
     const userId = req.currentUser!.id;
 
@@ -75,6 +81,8 @@ router.post(
       bookId,
       prevText,
       pageIndex,
+      readInSec,
+      progress,
     });
 
     res.status(201).send(`Created stats ${newStats._id}`);

@@ -17,7 +17,7 @@ export class UserCreatedListener extends Listener<IUserCreatedEvent> {
       correctEntry: 0,
       incorrectEntry: 0,
       fixedEntry: 0,
-      usedSec: 0,
+      readInSec: 0,
     };
 
     const stats = Stats.build(attrs);

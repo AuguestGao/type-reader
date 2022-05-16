@@ -27,7 +27,7 @@ router.patch(
   ],
   validateRequest,
   async (req: Request, res: Response) => {
-    const { bookId, prevText, pageIndex, readInSec } = req.body;
+    const { bookId, prevText, progress, pageIndex, readInSec } = req.body;
 
     const bookmark = await Bookmark.findOne({
       bookId,
@@ -39,7 +39,7 @@ router.patch(
       throw new NotFoundError();
     }
 
-    await bookmark.refresh(prevText, pageIndex, readInSec);
+    await bookmark.refresh(prevText, progress, pageIndex, readInSec);
 
     // ? change res body
     res.status(200).send({});

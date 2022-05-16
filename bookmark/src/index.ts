@@ -4,6 +4,7 @@ import { app } from "./app";
 import { natsWrapper } from "./nats-wrapper";
 import { BookCreatedListener } from "./events/listeners/book-created-listener";
 import { BookDeletedListener } from "./events/listeners/book-deleted-listener";
+import { StatsCreatedListener } from "./events/listeners/stats-created-listener";
 
 const start = async () => {
   if (!process.env.NATS_CLUSTER_ID) {
@@ -38,6 +39,7 @@ const start = async () => {
 
     new BookCreatedListener(natsWrapper.client).listen();
     new BookDeletedListener(natsWrapper.client).listen();
+    new StatsCreatedListener(natsWrapper.client).listen();
 
     await mongoose.connect(process.env.MONGO_URI);
     console.log("Connected to Mongo DB.");

@@ -16,6 +16,7 @@ interface IBookmarkDoc extends mongoose.Document {
   progress: number;
   refresh(
     prevText: string,
+    progress: number,
     pageIndex: number,
     readInSec: number
   ): Promise<void>;
@@ -69,6 +70,7 @@ bookmarkSchema.statics.build = (attrs: IBookmarkAttrs) => {
 
 bookmarkSchema.methods.refresh = async function (
   prevText: string,
+  progress: number,
   pageIndex: number,
   readInSec: number
 ) {
@@ -77,6 +79,7 @@ bookmarkSchema.methods.refresh = async function (
   bookmark.prevText = prevText;
   bookmark.current.pageIndex = pageIndex;
   bookmark.totalReadInSec += readInSec;
+  bookmark.progress = progress;
 
   await bookmark.save();
 };
