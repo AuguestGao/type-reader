@@ -1,0 +1,28 @@
+.main {
+  padding: 1px 0;
+  border-radius: 2px;
+  font-size: 20px;
+  margin-top: 2px;
+  white-space: pre-wrap;
+}
+
+.correct {
+  color: green;
+}
+
+.incorrect {
+  color: rgb(133, 26, 62);
+  background: rgba(255, 182, 193, 0.2);
+}
+
+.fixed {
+  color: yellow;
+}
+
+.current {
+  background: lightgray;
+}
+
+.untyped {
+  color: white;
+}

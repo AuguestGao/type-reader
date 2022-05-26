@@ -4,8 +4,7 @@ import Link from "next/link";
 import Router from "next/router";
 
 import useRequest from "../../hooks/use-request";
-import SignForm from "../../components/SignInSignUp";
-import FormInput from "../../components/FromInput";
+import { SignForm, FormInput } from "../../components";
 import { useAuth } from "../../context/user-context";
 
 import styles from "../../styles/Auth.module.scss";

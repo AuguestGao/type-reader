@@ -1,9 +1,10 @@
 import Link from "next/link";
+
 import { useAuth } from "../../context/user-context";
 
 import styles from "./styles.module.scss";
 
-const Header = () => {
+export const Header = () => {
   const { currentUser } = useAuth();
 
   return (
@@ -36,5 +37,3 @@ const Header = () => {
     </nav>
   );
 };
-
-export default Header;

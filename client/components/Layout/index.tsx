@@ -1,8 +1,7 @@
 import React, { ReactNode } from "react";
 import Head from "next/head";
 
-import BGP from "../BGP";
-import Header from "../Header";
+import { BGP, Header } from "../";
 
 import styles from "./styles.module.scss";
 
@@ -11,7 +10,7 @@ type LayoutProps = {
   title?: string;
 };
 
-const Layout = ({ children, title = "Type Reader" }: LayoutProps) => (
+export const Layout = ({ children, title = "Type Reader" }: LayoutProps) => (
   <div className={styles.main}>
     <Head>
       <title>{title}</title>
@@ -23,5 +22,3 @@ const Layout = ({ children, title = "Type Reader" }: LayoutProps) => (
     {children}
   </div>
 );
-
-export default Layout;

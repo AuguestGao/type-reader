@@ -7,7 +7,7 @@ import { AxiosRequestHeaders } from "axios";
 import useRequest from "../../hooks/use-request";
 import buildClient from "../../api/build-client";
 import { useAuth } from "../../context/user-context";
-import Textile from "../../components/Textile";
+import { Textile } from "../../components";
 
 import styles from "../../styles/Book.module.scss";
 

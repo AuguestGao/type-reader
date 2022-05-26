@@ -1,5 +1,7 @@
 import Image from "next/image";
+
 import { colorImageMap } from "../../utils/colorImageMap";
+
 import styles from "./styles.module.scss";
 
 const getImageByColor = (color: string) => {
@@ -12,7 +14,7 @@ const getImageByColor = (color: string) => {
   return imageSrc;
 };
 
-const BGP = ({ color = "darkgray" }: { color?: string }) => {
+export const BGP = ({ color = "darkgray" }: { color?: string }) => {
   const image = getImageByColor(color);
   return (
     <div className={styles.bgwrap}>
@@ -26,5 +28,3 @@ const BGP = ({ color = "darkgray" }: { color?: string }) => {
     </div>
   );
 };
-
-export default BGP;
