@@ -1,74 +1,121 @@
-import { FormEvent, useEffect, useState } from "react";
-import Textile from "../components/Textile";
-import Typable from "../components/Typable";
-import { Entry } from "../components/Entry";
+import { useEffect, useRef } from "react";
+import Link from "next/link";
+
 import { demoBook } from "../utils/demoBook";
-import { acceptables } from "../utils/acceptables";
+import useTimer from "../hooks/use-timer";
+import useTypingAction from "../hooks/use-typing-action";
+import { Textile, Typable, Entry, DigitalClock, Stats } from "../components";
+
+import styles from "../styles/Book.module.scss";
 
 const Demo = () => {
-  const [currentIndex, setCurretnIndex] = useState(0);
-  const [entries, setEntries] = useState(demoBook);
+  const {
+    meta: { title, author },
+    body,
+  } = demoBook;
+
+  const { startTimer, stopTimer, readInSec } = useTimer();
+  const {
+    page,
+    performAction,
+    isReadingPaused,
+    toggleReadingPaused,
+    bookCompleted,
+    getStats,
+  } = useTypingAction(body);
 
   useEffect(() => {
-    const onKeyDown = (e: KeyboardEvent) => {
+    const keyDownHandler = (e: KeyboardEvent) => {
       e.preventDefault();
 
-      const pressedKey = e.key;
-
-      const getEntryState = (incomingKey: string) => {
-        return incomingKey === entries[currentIndex]["char"]
-          ? "correct"
-          : "incorrect";
-      };
-
-      if (pressedKey === "Backspace" && currentIndex > 0) {
-        setEntries((entries) =>
-          entries.map((entry) => {
-            return entry.index === currentIndex
-              ? { ...entry, state: "default" }
-              : entry;
-          })
-        );
-        setCurretnIndex(currentIndex - 1);
-      }
-
-      if (acceptables.includes(pressedKey)) {
-        // console.log(pressedKey);
-
-        setEntries((entries) =>
-          entries.map((entry) => {
-            return entry.index === currentIndex
-              ? { ...entry, state: getEntryState(pressedKey) }
-              : entry;
-          })
-        );
-        setCurretnIndex(currentIndex + 1);
+      if (!isReadingPaused) {
+        performAction(e.key);
       }
     };
 
-    document.addEventListener("keydown", onKeyDown);
+    window.addEventListener("keydown", keyDownHandler);
 
     return () => {
-      document.removeEventListener("keydown", onKeyDown);
+      window.removeEventListener("keydown", keyDownHandler);
     };
-  }, [currentIndex]);
+  });
 
-  // useEffect(() => {});
+  useEffect(() => {
+    isReadingPaused ? stopTimer() : startTimer();
+  }, [isReadingPaused]);
+
+  const calculateResult = () => {
+    const { correctEntry, incorrectEntry, fixedEntry } = getStats();
+
+    const totalEntry = correctEntry + incorrectEntry + fixedEntry;
+    const wpm = Math.round(totalEntry / 5 / (readInSec / 60));
+    const netWpm = Math.round(
+      (totalEntry / 5 - (incorrectEntry - fixedEntry)) / (readInSec / 60)
+    );
+    const accuracy = Math.round((correctEntry / totalEntry) * 100);
+
+    return { wpm, netWpm, readInSec, accuracy };
+  };
 
   return (
     <Textile>
-      <h1>Demo</h1>
-      <Typable>
-        {entries.map(({ char, state, index }) => {
-          return (
-            <Entry
-              key={index}
-              char={char}
-              state={index === currentIndex ? "current" : state}
-            />
-          );
-        })}
-      </Typable>
+      {bookCompleted.current ? (
+        <div>
+          <Stats data={calculateResult()} />
+          <div className="d-grid gap-2 mt-5 col-6 mx-auto">
+            <Link href="/auth/signup" passHref>
+              <button type="button" className="btn btn-danger m-2">
+                Sign Up
+              </button>
+            </Link>
+            <Link href="/auth/signin" passHref>
+              <button type="button" className="btn btn-warning m-2">
+                Sign In
+              </button>
+            </Link>
+          </div>
+        </div>
+      ) : (
+        <div>
+          <div className={styles.aboveTypable}>
+            <h1>{title}</h1>
+            {author !== "Unknown" && <p>by {author}</p>}
+          </div>
+
+          <Typable>
+            {page.entries.map(({ char, charIndex, state }) => (
+              <Entry
+                key={charIndex}
+                char={char}
+                state={charIndex === page.cursorIndex ? "current" : state}
+              />
+            ))}
+          </Typable>
+
+          <div className={styles.belowTypable}>
+            <DigitalClock />
+            <div className="buttons">
+              {isReadingPaused ? (
+                <button
+                  type="button"
+                  className="btn btn-warning"
+                  onClick={() => toggleReadingPaused(false)}
+                >
+                  Resume Reading
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  className="btn btn-dark"
+                  onClick={() => toggleReadingPaused(true)}
+                >
+                  Pause Reading
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </Textile>
   );
 };

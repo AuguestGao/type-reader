@@ -1,6 +1,6 @@
 import type { AppProps } from "next/app";
 
-import Layout from "../components/Layout";
+import { Layout } from "../components";
 import { AuthProvider } from "../context/user-context";
 
 import "bootstrap/dist/css/bootstrap.css";

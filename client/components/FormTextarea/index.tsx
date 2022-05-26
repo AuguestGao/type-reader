@@ -1,6 +1,6 @@
-import { IFormField } from "../../@types/book";
+import { FormField } from "../../types";
 
-const FormTextarea = ({ label, id, value, onChange }: IFormField) => {
+export const FormTextarea = ({ label, id, value, onChange }: FormField) => {
   return (
     <div className="form-floating mb-2">
       <textarea
@@ -19,5 +19,3 @@ const FormTextarea = ({ label, id, value, onChange }: IFormField) => {
     </div>
   );
 };
-
-export default FormTextarea;
