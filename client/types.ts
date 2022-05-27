@@ -75,3 +75,8 @@ export interface IStats {
   readInSec: number;
   accuracy: number;
 }
+
+export interface IBookStats {
+  totalSecsOnBook: number;
+  progress: number;
+}
