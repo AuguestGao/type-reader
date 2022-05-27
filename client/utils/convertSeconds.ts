@@ -24,17 +24,22 @@ export const getDHMS = (readInSec: number) => {
 
 export const getDHMSString = (readInSec: number) => {
   const { days, hours, minutes, seconds } = getDHMS(readInSec);
-
   let result = "";
 
   if (days !== 0) {
-    result += `${days} day ${hours} hour ${minutes} minute ${seconds} second`;
+    result += `${days} day${days > 1 ? "s " : " "}`;
+    result += `${hours} hour${hours > 1 ? "s " : " "}`;
+    result += `${minutes} minute${minutes > 1 ? "s " : " "}`;
+    result += `${seconds} second${seconds > 1 ? "s " : ""}`;
   } else if (hours !== 0) {
-    result += `${hours} hour ${minutes} minute ${seconds} second`;
+    result += `${hours} hour${hours > 1 ? "s " : " "}`;
+    result += `${minutes} minute${minutes > 1 ? "s " : " "}`;
+    result += `${seconds} second${seconds > 1 ? "s " : ""}`;
   } else if (minutes !== 0) {
-    result += `${minutes} minute ${seconds} second`;
+    result += `${minutes} minute${minutes > 1 ? "s " : " "}`;
+    result += `${seconds} second${seconds > 1 ? "s " : ""}`;
   } else {
-    result += `${seconds} second`;
+    result += `${seconds} second${seconds > 1 ? "s " : ""}`;
   }
 
   return result;

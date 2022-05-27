@@ -10,3 +10,5 @@ export * from "./SignInSignUp";
 export * from "./Textile";
 export * from "./Typable";
 export * from "./Stats";
+export * from "./Bookstats";
+export * from "./ProgressBar";

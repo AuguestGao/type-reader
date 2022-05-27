@@ -1,9 +1,10 @@
 .main {
-  padding: 1px 0;
+  display: inline;
+  font-family: monospace;
+  padding: 1px 1px;
   border-radius: 2px;
   font-size: 20px;
   margin-top: 2px;
-  white-space: pre-wrap;
 }
 
 .correct {
@@ -25,4 +26,18 @@
 
 .untyped {
   color: white;
+}
+
+.twoSpaces {
+  padding: 1px 0.5rem;
+}
+
+.fourSpaces {
+  padding: 1px 1rem;
+}
+
+.break {
+  display: block;
+  width: 0;
+  height: 0;
 }

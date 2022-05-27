@@ -78,8 +78,14 @@ const useTypingAction = (body: BookBody[], initialPageIndex = 0) => {
       case "Backspace":
         updateCursorAndPage(false);
         break;
-      // case "Enter":
-      // case"Tab":
+      case "Enter":
+        updateRenderableEntryState("ENTER");
+        updateCursorAndPage(true);
+        break;
+      case "Tab":
+        updateRenderableEntryState("TAB");
+        updateCursorAndPage(true);
+        break;
       default:
         if (renderableEntries.includes(pressedKey)) {
           updateRenderableEntryState(pressedKey);
