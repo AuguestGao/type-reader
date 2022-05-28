@@ -9,6 +9,7 @@ import { createBookRouter } from "./routes/create";
 import { seeAllBooksRouter } from "./routes/see-all";
 import { seeOneBookRouter } from "./routes/see-one";
 import { deleteBookRouter } from "./routes/delete";
+import { completeBookRouter } from "./routes/complete";
 
 const app = express();
 
@@ -26,6 +27,7 @@ app.use(createBookRouter);
 app.use(seeOneBookRouter);
 app.use(seeAllBooksRouter);
 app.use(deleteBookRouter);
+app.use(completeBookRouter);
 
 app.all("*", async (req: Request, res: Response) => {
   throw new NotFoundError();

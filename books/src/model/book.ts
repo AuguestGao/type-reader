@@ -1,17 +1,24 @@
 import mongoose from "mongoose";
 
 interface BookAttrs {
-  title: string;
-  body: string;
   userId: string;
+  title: string;
   author: string;
+  body: string;
 }
 
 interface BookDoc extends mongoose.Document {
-  title: string;
-  body: string;
   userId: string;
+  title: string;
   author: string;
+  totalPages: number;
+  body: {
+    pageIndex: number;
+    pageContent: string[];
+  }[];
+  status: "CREATED" | "PAGED" | "COMPLETED";
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 interface BookModel extends mongoose.Model<BookDoc> {
@@ -20,15 +27,11 @@ interface BookModel extends mongoose.Model<BookDoc> {
 
 const bookSchema = new mongoose.Schema(
   {
-    title: {
-      type: String,
-      required: true,
-    },
-    body: {
-      type: String,
-      required: true,
-    },
     userId: {
+      type: String,
+      required: true,
+    },
+    title: {
       type: String,
       required: true,
     },
@@ -36,8 +39,32 @@ const bookSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    totalPages: {
+      type: Number,
+      required: true,
+    },
+    body: [
+      {
+        pageIndex: {
+          type: Number,
+          required: true,
+        },
+        pageContent: [
+          {
+            type: String,
+            required: true,
+          },
+        ],
+      },
+    ],
+    status: {
+      type: String,
+      enum: ["CREATED", "PAGED", "COMPLETED"],
+      required: true,
+    },
   },
   {
+    timestamps: true,
     toJSON: {
       transform(doc, ret) {
         ret.id = ret._id;
@@ -48,7 +75,18 @@ const bookSchema = new mongoose.Schema(
 );
 
 bookSchema.statics.build = (attrs: BookAttrs) => {
-  return new Book(attrs);
+  const extendedAttrs = {
+    ...attrs,
+    totalPages: 1,
+    body: [
+      {
+        pageIndex: 0,
+        pageContent: [attrs.body],
+      },
+    ],
+    status: "CREATED",
+  };
+  return new Book(extendedAttrs);
 };
 
 const Book = mongoose.model<BookDoc, BookModel>("Book", bookSchema);

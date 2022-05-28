@@ -1,8 +1,6 @@
-import request from "supertest";
 import mongoose from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import jwt from "jsonwebtoken";
-import { app } from "../app";
 
 declare global {
   function getSignInCookie(): string[];

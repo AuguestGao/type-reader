@@ -1,6 +1,5 @@
 import request from "supertest";
 
-import { Book } from "../../model/book";
 import { app } from "../../app";
 
 it("returns the book when the request is all good", async () => {

@@ -1,9 +1,5 @@
 import { Router, Request, Response } from "express";
-import {
-  NotAuthorizedError,
-  NotFoundError,
-  requireAuth,
-} from "@type-reader/common";
+import { NotFoundError, requireAuth } from "@type-reader/common";
 
 import { Book } from "../model/book";
 import { natsWrapper } from "../nats-wrapper";
@@ -28,7 +24,7 @@ router.delete(
       bookId: book._id,
       userId: book.userId,
     });
-    res.status(200).send(book._id);
+    res.status(200).send({ id: book._id, message: "Book deleted." });
   }
 );
 
