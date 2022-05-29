@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { BookStatus } from "@type-reader/common";
 
 interface BookAttrs {
   userId: string;
@@ -16,7 +17,7 @@ interface BookDoc extends mongoose.Document {
     pageIndex: number;
     pageContent: string[];
   }[];
-  status: "CREATED" | "PAGED" | "COMPLETED";
+  status: BookStatus;
   createdAt: Date;
   updatedAt: Date;
 }
