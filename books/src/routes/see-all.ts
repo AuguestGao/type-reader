@@ -9,6 +9,8 @@ router.get("/api/books", requireAuth, async (req: Request, res: Response) => {
   const books = await Book.find({ userId: req.currentUser!.id }).select([
     "title",
     "_id",
+    "author",
+    "",
   ]);
 
   res.status(200).send(books);

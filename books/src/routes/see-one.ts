@@ -13,12 +13,7 @@ router.get(
   "/api/books/:id",
   requireAuth,
   async (req: Request, res: Response) => {
-    const book = await Book.findById(req.params.id).select([
-      "title",
-      "_id",
-      "author",
-      "userId",
-    ]);
+    const book = await Book.findById(req.params.id);
 
     if (!book) {
       throw new NotFoundError();

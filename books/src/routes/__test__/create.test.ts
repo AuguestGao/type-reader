@@ -50,7 +50,7 @@ it("returns a 201 if everything goes well", async () => {
   expect(books.length).toEqual(1);
 });
 
-it("fills author with unknown if it's missing", async () => {
+it("fills author with 'unknown' if it's missing", async () => {
   await request(app)
     .post("/api/books")
     .set("Cookie", global.getSignInCookie())
@@ -62,7 +62,7 @@ it("fills author with unknown if it's missing", async () => {
     .expect(201);
 
   const books = await Book.find({});
-  expect(books[0].author).toBe("Unknown");
+  expect(books[0].author).toBe("Anonymous");
 });
 
 it("publishes a BookCreated event", async () => {

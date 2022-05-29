@@ -12,8 +12,8 @@ router.post(
   "/api/books",
   requireAuth,
   [
-    body("title").not().isEmpty().withMessage("Title is required"),
-    body("body").not().isEmpty().withMessage("Body is required"),
+    body("title").notEmpty().withMessage("Title is required"),
+    body("body").notEmpty().withMessage("Body is required"),
   ],
   validateRequest,
   async (req: Request, res: Response) => {
@@ -22,7 +22,7 @@ router.post(
       title,
       body,
       userId: req.currentUser!.id,
-      author: author ? author : "Unknown",
+      author: author ? author : "Anonymous",
     });
     await book.save();
 
@@ -31,7 +31,7 @@ router.post(
       userId: book.userId,
     });
 
-    res.status(201).send({ id: book._id });
+    res.status(201).send({ id: book._id, message: "Book created." });
   }
 );
 
