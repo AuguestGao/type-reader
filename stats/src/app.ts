@@ -5,7 +5,8 @@ import "express-async-errors";
 
 import { errorHandler, NotFoundError, currentUser } from "@type-reader/common";
 import { getLatestStatsRouter } from "./routes/get-latest";
-import { createStatsRouter } from "./routes/create";
+import { getAllStatsRouter } from "./routes/get-all";
+import { updateStatsRouter } from "./routes/update";
 
 const app = express();
 
@@ -18,8 +19,9 @@ app.use(
   })
 );
 app.use(currentUser);
+app.use(updateStatsRouter);
 app.use(getLatestStatsRouter);
-app.use(createStatsRouter);
+app.use(getAllStatsRouter);
 
 app.all("*", async (req: Request, res: Response) => {
   throw new NotFoundError();

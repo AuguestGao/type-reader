@@ -34,6 +34,7 @@ const bookSchema = new mongoose.Schema(
     },
     author: {
       type: String,
+      enum: Object.values(BookStatus),
       required: true,
     },
   },
@@ -48,7 +49,18 @@ const bookSchema = new mongoose.Schema(
 );
 
 bookSchema.statics.build = (attrs: BookAttrs) => {
-  return new Book(attrs);
+  const extendedAttrs = {
+    ...attrs,
+    totalPages: 1,
+    body: [
+      {
+        pageIndex: 0,
+        pageContent: [attrs.body],
+      },
+    ],
+    status: BookStatus.Created,
+  };
+  return new Book(extendedAttrs);
 };
 
 const Book = mongoose.model<BookDoc, BookModel>("Book", bookSchema);
