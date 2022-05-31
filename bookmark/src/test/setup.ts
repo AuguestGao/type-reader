@@ -5,7 +5,11 @@ import jwt from "jsonwebtoken";
 import { app } from "../app";
 
 declare global {
-  function getSignInCookie(): string[];
+  function getSignIn(): {
+    userId: string;
+    cookie: string[];
+  };
+  function getBookId(): string;
 }
 
 jest.mock("../nats-wrapper.ts");
@@ -38,7 +42,7 @@ afterAll(async () => {
   await mongo.stop();
 });
 
-global.getSignInCookie = () => {
+global.getSignIn = () => {
   const payload = {
     id: new mongoose.Types.ObjectId().toHexString(),
     displayName: "john",
@@ -54,5 +58,9 @@ global.getSignInCookie = () => {
 
   // console.log(base64);
 
-  return [`session=${base64}`];
+  return { userId: payload.id, cookie: [`session=${base64}`] };
+};
+
+global.getBookId = () => {
+  return new mongoose.Types.ObjectId().toHexString();
 };

@@ -5,47 +5,70 @@ import { app } from "../../app";
 import { natsWrapper } from "../../nats-wrapper";
 import mongoose from "mongoose";
 
-// it("returns 400 with an invalid bookId", async () => {
-//   await request(app)
-//     .post("/api/bookmark")
-//     .set("Cookie", global.getSignInCookie())
-//     .send({
-//       bookId: "123123213",
-//     })
-//     .expect(400);
+it("returns 401 when an existing bookmark does not belong to the user", async () => {
+  const book1 = global.getBookId();
+  const book2 = global.getBookId();
+  const user1 = global.getSignIn();
+  const user2 = global.getSignIn();
 
-//   await request(app)
-//     .post("/api/bookmark")
-//     .set("Cookie", global.getSignInCookie())
-//     .send({})
-//     .expect(400);
-// });
-
-it("gets the right bookmark when all is well", async () => {
-  const signInCookie1 = global.getSignInCookie();
-  const bookId = new mongoose.Types.ObjectId();
+  const bk1 = Bookmark.build({ userId: user1.userId, bookId: book1 });
+  await bk1.save();
+  const bk2 = Bookmark.build({ userId: user2.userId, bookId: book2 });
+  await bk2.save();
 
   await request(app)
-    .post("/api/bookmark")
-    .set("Cookie", signInCookie1)
-    .send({
-      bookId: new mongoose.Types.ObjectId(),
-    })
-    .expect(201);
-
-  await request(app)
-    .post("/api/bookmark")
-    .set("Cookie", signInCookie1)
-    .send({
-      bookId: bookId,
-    })
-    .expect(201);
-
-  const res1 = await request(app)
     .get("/api/bookmark")
-    .set("Cookie", signInCookie1)
-    .send({ bookId: bookId })
+    .set("Cookie", user1.cookie)
+    .send({ bookId: book2 })
+    .expect(401);
+});
+
+it("returns 400 with an invalid bookId", async () => {
+  const book1 = global.getBookId();
+  const user1 = global.getSignIn();
+
+  const bk1 = Bookmark.build({ userId: user1.userId, bookId: book1 });
+  await bk1.save();
+
+  // id is not legit
+  await request(app)
+    .get("/api/bookmark")
+    .set("Cookie", user1.cookie)
+    .send({ bookId: "1561" })
+    .expect(404);
+
+  // id is legit but not exist
+  await request(app)
+    .get("/api/bookmark")
+    .set("Cookie", user1.cookie)
+    .send({ bookId: global.getBookId() })
+    .expect(404);
+});
+
+it("returns 200 when all is good", async () => {
+  const book1 = global.getBookId();
+  const book2 = global.getBookId();
+  const user1 = global.getSignIn();
+  const user2 = global.getSignIn();
+
+  const bk1 = Bookmark.build({ userId: user1.userId, bookId: book1 });
+  await bk1.save();
+  const bk2 = Bookmark.build({ userId: user2.userId, bookId: book2 });
+  await bk2.save();
+
+  const req1 = await request(app)
+    .get("/api/bookmark")
+    .set("Cookie", user1.cookie)
+    .send({ bookId: book1 })
     .expect(200);
 
-  expect(res1.body.bookId).toEqual(bookId.toString("hex"));
+  expect(req1.body.totalSecOnBook).toBe(0);
+
+  const req2 = await request(app)
+    .get("/api/bookmark")
+    .set("Cookie", user2.cookie)
+    .send({ bookId: book2 })
+    .expect(200);
+
+  expect(req2.body.pageIndex).toBe(0);
 });
