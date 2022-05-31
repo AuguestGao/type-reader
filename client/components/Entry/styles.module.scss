@@ -1,0 +1,43 @@
+.main {
+  display: inline;
+  font-family: monospace;
+  padding: 1px 1px;
+  border-radius: 2px;
+  font-size: 20px;
+  margin-top: 2px;
+}
+
+.correct {
+  color: green;
+}
+
+.incorrect {
+  color: rgb(133, 26, 62);
+  background: rgba(255, 182, 193, 0.2);
+}
+
+.fixed {
+  color: yellow;
+}
+
+.current {
+  background: lightgray;
+}
+
+.untyped {
+  color: white;
+}
+
+.twoSpaces {
+  padding: 1px 0.5rem;
+}
+
+.fourSpaces {
+  padding: 1px 1rem;
+}
+
+.break {
+  display: block;
+  width: 0;
+  height: 0;
+}

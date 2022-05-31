@@ -1,6 +1,5 @@
 import { Router, Request, Response } from "express";
 import { NotFoundError, requireAuth, BookStatus } from "@type-reader/common";
-
 import { Book } from "../model/book";
 
 const router = Router();

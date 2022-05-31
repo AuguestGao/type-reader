@@ -1,6 +1,6 @@
-import { IFormField } from "../../@types/book";
+import { FormField } from "../../types";
 
-const FormInput = ({ type, label, id, value, onChange }: IFormField) => {
+export const FormInput = ({ type, label, id, value, onChange }: FormField) => {
   return (
     <div className="form-floating mb-3">
       <input
@@ -15,5 +15,3 @@ const FormInput = ({ type, label, id, value, onChange }: IFormField) => {
     </div>
   );
 };
-
-export default FormInput;

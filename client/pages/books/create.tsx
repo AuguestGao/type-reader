@@ -2,12 +2,9 @@ import { FormEvent, useEffect, useState } from "react";
 import type { NextPage } from "next";
 import Router from "next/router";
 
-import BookForm from "../../components/BookForm";
-import FormInput from "../../components/FromInput";
-import FormTextarea from "../../components/FormTextarea";
+import { BookForm, FormInput, FormTextarea, Textile } from "../../components";
 import useRequest from "../../hooks/use-request";
 import { useAuth } from "../../context/user-context";
-import Textile from "../../components/Textile";
 
 import styles from "../../styles/Book.module.scss";
 

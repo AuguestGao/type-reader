@@ -1,14 +1,14 @@
 import type { GetServerSideProps } from "next";
+import { useEffect } from "react";
 import { AxiosRequestHeaders } from "axios";
 
 import { useAuth } from "../context/user-context";
 import buildClient from "../api/build-client";
-import { TCurrentUser } from "../@types/auth";
+import { CurrentUser } from "../types";
 
 import styles from "../styles/Home.module.scss";
-import { useEffect } from "react";
 
-const Home = ({ user }: { user: TCurrentUser }) => {
+const Home = ({ user }: { user: CurrentUser }) => {
   const { currentUser, setCurrentUser } = useAuth();
 
   useEffect(() => {
@@ -32,7 +32,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     const { data } = await client.get("/api/users/currentuser");
     return {
       props: {
-        user: data.currentUser as TCurrentUser,
+        user: data.currentUser as CurrentUser,
       },
     };
   } catch (err) {

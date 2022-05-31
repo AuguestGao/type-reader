@@ -1,17 +1,25 @@
 import mongoose from "mongoose";
+import { BookStatus } from "@type-reader/common";
 
 interface BookAttrs {
-  title: string;
-  body: string;
   userId: string;
+  title: string;
   author: string;
+  body: string;
 }
 
 interface BookDoc extends mongoose.Document {
-  title: string;
-  body: string;
   userId: string;
+  title: string;
   author: string;
+  totalPages: number;
+  body: {
+    pageIndex: number;
+    pageContent: string[];
+  }[];
+  status: BookStatus;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 interface BookModel extends mongoose.Model<BookDoc> {
@@ -20,25 +28,44 @@ interface BookModel extends mongoose.Model<BookDoc> {
 
 const bookSchema = new mongoose.Schema(
   {
-    title: {
-      type: String,
-      required: true,
-    },
-    body: {
-      type: String,
-      required: true,
-    },
     userId: {
       type: String,
       required: true,
     },
+    title: {
+      type: String,
+      required: true,
+    },
     author: {
+      type: String,
+      required: true,
+    },
+    totalPages: {
+      type: Number,
+      required: true,
+    },
+    body: [
+      {
+        pageIndex: {
+          type: Number,
+          required: true,
+        },
+        pageContent: [
+          {
+            type: String,
+            required: true,
+          },
+        ],
+      },
+    ],
+    status: {
       type: String,
       enum: Object.values(BookStatus),
       required: true,
     },
   },
   {
+    timestamps: true,
     toJSON: {
       transform(doc, ret) {
         ret.id = ret._id;
@@ -59,7 +86,7 @@ bookSchema.statics.build = (attrs: BookAttrs) => {
       },
     ],
     status: BookStatus.Created,
-  };
+ };
   return new Book(extendedAttrs);
 };
 
