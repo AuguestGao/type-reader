@@ -1,41 +1,41 @@
 import mongoose from "mongoose";
 import { Router, Request, Response } from "express";
-import { body } from "express-validator";
 import {
   NotFoundError,
   requireAuth,
-  validateRequest,
+  NotAuthorizedError,
 } from "@type-reader/common";
 
-import { natsWrapper } from "../nats-wrapper";
 import { Bookmark } from "../model/bookmark";
+import { body } from "express-validator";
 
 const router = Router();
 
 router.get(
   "/api/bookmark",
+  body("bookId")
+    .exists()
+    .custom((input: string) => mongoose.Types.ObjectId.isValid(input))
+    .withMessage("Invalid bookId"),
   requireAuth,
-  [
-    body("bookId")
-      .not()
-      .isEmpty()
-      .custom((input: string) => mongoose.Types.ObjectId.isValid(input))
-      .withMessage("Invalid bookId"),
-  ],
-  validateRequest,
   async (req: Request, res: Response) => {
     const { bookId } = req.body;
 
     const bookmark = await Bookmark.findOne({
       bookId,
-      userId: req.currentUser!.id,
     });
 
     if (!bookmark) {
       throw new NotFoundError();
     }
 
-    res.status(200).send(bookmark);
+    if (bookmark.userId !== req.currentUser!.id) {
+      throw new NotAuthorizedError();
+    }
+
+    const { pageIndex, cursorIndex, totalSecOnBook, prevText } = bookmark;
+
+    res.status(200).send({ pageIndex, cursorIndex, totalSecOnBook, prevText });
   }
 );
 

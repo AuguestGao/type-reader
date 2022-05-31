@@ -5,10 +5,7 @@ import "express-async-errors";
 
 import { errorHandler, NotFoundError, currentUser } from "@type-reader/common";
 
-import { createBookmarkRouter } from "./routes/create";
 import { getBookmarkRouter } from "./routes/get";
-import { deleteBookmarkRouter } from "./routes/delete";
-import { updateBookmarkRouter } from "./routes/update";
 
 const app = express();
 
@@ -17,15 +14,11 @@ app.use(json());
 app.use(
   cookieSession({
     signed: false,
-    secure: process.env.NODE_ENV !== "test", // only send cookies via https
+    secure: process.env.NODE_ENV !== "test",
   })
 );
-app.use(currentUser); //inject currentUser in req.currentUser
-
-app.use(createBookmarkRouter);
+app.use(currentUser);
 app.use(getBookmarkRouter);
-app.use(deleteBookmarkRouter);
-app.use(updateBookmarkRouter);
 
 app.all("*", async (req: Request, res: Response) => {
   throw new NotFoundError();

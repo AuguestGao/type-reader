@@ -8,18 +8,10 @@ interface IBookmarkAttrs {
 interface IBookmarkDoc extends mongoose.Document {
   bookId: string;
   userId: string;
-  current: {
-    pageIndex: number;
-  };
+  totalSecOnBook: number;
+  pageIndex: number;
+  cursorIndex: number;
   prevText: string;
-  totalReadInSec: number;
-  progress: number;
-  refresh(
-    prevText: string,
-    progress: number,
-    pageIndex: number,
-    readInSec: number
-  ): Promise<void>;
 }
 
 interface IBookmarkModel extends mongoose.Model<IBookmarkDoc> {
@@ -36,17 +28,25 @@ const bookmarkSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    current: {
-      pageIndex: {
-        type: String,
-        required: true,
-      },
+    pageIndex: {
+      type: Number,
+      required: true,
     },
-    prevText: String,
-    totalReadInSec: Number,
-    progress: Number,
+    cursorIndex: {
+      type: Number,
+      required: true,
+    },
+    totalSecOnBook: {
+      type: Number,
+      required: true,
+    },
+    prevText: {
+      type: String,
+      required: true,
+    },
   },
   {
+    timestamps: true,
     toJSON: {
       transform(doc, ret) {
         ret.id = ret._id;
@@ -57,31 +57,15 @@ const bookmarkSchema = new mongoose.Schema(
 );
 
 bookmarkSchema.statics.build = (attrs: IBookmarkAttrs) => {
+  const { userId, bookId } = attrs;
   return new Bookmark({
-    ...attrs,
-    current: {
-      pageIndex: 0,
-    },
-    prevText: "",
-    totalReadInSec: 0,
-    progress: 0,
+    userId,
+    bookId,
+    totalSecOnBook: 0,
+    pageIndex: 0,
+    cursorIndex: 0,
+    prevText: "n/a",
   });
-};
-
-bookmarkSchema.methods.refresh = async function (
-  prevText: string,
-  progress: number,
-  pageIndex: number,
-  readInSec: number
-) {
-  const bookmark = this as IBookmarkDoc;
-
-  bookmark.prevText = prevText;
-  bookmark.current.pageIndex = pageIndex;
-  bookmark.totalReadInSec += readInSec;
-  bookmark.progress = progress;
-
-  await bookmark.save();
 };
 
 const Bookmark = mongoose.model<IBookmarkDoc, IBookmarkModel>(
