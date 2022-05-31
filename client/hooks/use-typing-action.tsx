@@ -1,12 +1,6 @@
 import { useState, useRef } from "react";
-import {
-  BookBody,
-  Entry_State,
-  PageHistory,
-  Page,
-  Flip,
-  Entry,
-} from "../types";
+import { Entry, EntryState, PageHistory } from "@type-reader/common";
+import { BookBody, Page, Flip } from "../types";
 import { renderableEntries } from "../utils/renderable-entries";
 
 const useTypingAction = (body: BookBody[], initialPageIndex = 0) => {
@@ -15,17 +9,17 @@ const useTypingAction = (body: BookBody[], initialPageIndex = 0) => {
   const bookCompleted = useRef(false);
 
   const stats = useRef({ correctEntry: 0, incorrectEntry: 0, fixedEntry: 0 });
-  const updateStats = (state: Entry_State, isPlus: Boolean) => {
+  const updateStats = (state: EntryState, isPlus: Boolean) => {
     let { correctEntry, incorrectEntry, fixedEntry } = stats.current;
 
     switch (state) {
-      case Entry_State.Correct:
+      case EntryState.Correct:
         isPlus ? (correctEntry += 1) : (correctEntry -= 1);
         break;
-      case Entry_State.Incorrect:
+      case EntryState.Incorrect:
         isPlus ? (incorrectEntry += 1) : (incorrectEntry -= 1);
         break;
-      case Entry_State.Fixed:
+      case EntryState.Fixed:
         isPlus ? (fixedEntry += 1) : (fixedEntry -= 1);
         break;
       default:
@@ -57,7 +51,7 @@ const useTypingAction = (body: BookBody[], initialPageIndex = 0) => {
           charIndex,
           char,
           pressedKey: "",
-          state: Entry_State.Untyped,
+          state: EntryState.Untyped,
         })),
         totalEntries: pageContent.length,
       };
@@ -106,30 +100,30 @@ const useTypingAction = (body: BookBody[], initialPageIndex = 0) => {
       pressedKey === showedKey;
 
     // decide newState
-    if (oldState === Entry_State.Untyped) {
+    if (oldState === EntryState.Untyped) {
       isCorrectEntry(pressedKey, showedKey)
-        ? (newState = Entry_State.Correct)
-        : (newState = Entry_State.Incorrect);
+        ? (newState = EntryState.Correct)
+        : (newState = EntryState.Incorrect);
       updateStats(newState, true);
     } else if (
-      oldState === Entry_State.Correct &&
+      oldState === EntryState.Correct &&
       !isCorrectEntry(pressedKey, showedKey)
     ) {
-      newState = Entry_State.Incorrect;
+      newState = EntryState.Incorrect;
       updateStats(oldState, false);
       updateStats(newState, true);
     } else if (
-      oldState === Entry_State.Incorrect &&
+      oldState === EntryState.Incorrect &&
       isCorrectEntry(pressedKey, showedKey)
     ) {
-      newState = Entry_State.Fixed;
+      newState = EntryState.Fixed;
       updateStats(oldState, false);
       updateStats(newState, true);
     } else if (
-      oldState === Entry_State.Fixed &&
+      oldState === EntryState.Fixed &&
       !isCorrectEntry(pressedKey, showedKey)
     ) {
-      newState = Entry_State.Incorrect;
+      newState = EntryState.Incorrect;
       updateStats(oldState, false);
       updateStats(newState, true);
     }

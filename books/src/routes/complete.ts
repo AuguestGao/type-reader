@@ -1,6 +1,5 @@
 import { Router, Request, Response } from "express";
-import { NotFoundError, requireAuth } from "@type-reader/common";
-
+import { NotFoundError, requireAuth, BookStatus } from "@type-reader/common";
 import { Book } from "../model/book";
 
 const router = Router();
@@ -15,7 +14,7 @@ router.patch(
         userId: req.currentUser!.id,
       },
       {
-        status: "COMPLETED",
+        status: BookStatus.Completed,
       }
     );
 

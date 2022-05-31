@@ -38,7 +38,7 @@ it("completes the book when the request is all good", async () => {
     .send({})
     .expect(200);
 
-  expect(book1Req.body!.status).toBe("COMPLETED");
+  expect(book1Req.body!.status).toBe("completed");
 
   const book2Req = await request(app)
     .get(`/api/books/${book2Id}`)
@@ -46,5 +46,5 @@ it("completes the book when the request is all good", async () => {
     .send({})
     .expect(200);
 
-  expect(book2Req.body!.status).toBe("CREATED");
+  expect(book2Req.body!.status).toBe("created");
 });

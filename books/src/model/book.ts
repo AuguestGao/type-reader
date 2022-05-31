@@ -60,7 +60,7 @@ const bookSchema = new mongoose.Schema(
     ],
     status: {
       type: String,
-      enum: ["CREATED", "PAGED", "COMPLETED"],
+      enum: Object.values(BookStatus),
       required: true,
     },
   },
@@ -85,8 +85,8 @@ bookSchema.statics.build = (attrs: BookAttrs) => {
         pageContent: [attrs.body],
       },
     ],
-    status: "CREATED",
-  };
+    status: BookStatus.Created,
+ };
   return new Book(extendedAttrs);
 };
 

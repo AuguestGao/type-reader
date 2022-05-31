@@ -3,36 +3,91 @@ import request from "supertest";
 import { Stats } from "../../model/stats";
 import { app } from "../../app";
 
-it.todo("get the latest stat");
+it("returns 400 if userId is missing", async () => {
+  await request(app).get("/api/stats/latest").send({}).expect(401);
+});
 
-// it("returns the book when the request is all good", async () => {
-//   const signInCookie = global.getSignInCookie();
+it("returns latest stats if everything is good", async () => {
+  const { userId, cookie } = global.getSignIn();
 
-//   await request(app).post("/api/books").set("Cookie", signInCookie).send({
-//     title: "1",
-//     body: "1",
-//     author: "1",
-//   });
+  const stats = Stats.build({ userId });
+  await stats.save();
 
-//   await request(app).post("/api/books").set("Cookie", signInCookie).send({
-//     title: "2",
-//     body: "2",
-//     author: "2",
-//   });
+  const req1 = await request(app)
+    .get("/api/stats")
+    .set("Cookie", cookie)
+    .send({})
+    .expect(200);
 
-//   const allBooksReq = await request(app)
-//     .get("/api/books")
-//     .set("Cookie", signInCookie)
-//     .send({})
-//     .expect(200);
+  expect(req1.body.totalReadInSec).toBe(0);
 
-//   const bookId = allBooksReq.body[1].id;
+  const bookId = global.getBookId();
 
-//   const oneBookReq = await request(app)
-//     .get(`/api/books/${bookId}`)
-//     .set("Cookie", signInCookie)
-//     .send({})
-//     .expect(200);
+  const data1 = {
+    bookId,
+    correctEntry: 20,
+    incorrectEntry: 5,
+    fixedEntry: 10,
+    readInSec: 60,
+    pageHistory: global.getPageHistory(20, 5, 10),
+    pageIndex: 10,
+    cursorIndex: 50,
+  };
 
-//   expect(oneBookReq.body!.title).toEqual("2");
-// });
+  const data2 = {
+    bookId,
+    correctEntry: 50,
+    incorrectEntry: 0,
+    fixedEntry: 1,
+    readInSec: 51,
+    pageHistory: global.getPageHistory(50, 0, 1),
+    pageIndex: 7,
+    cursorIndex: 1,
+  };
+
+  await request(app)
+    .patch("/api/stats")
+    .set("Cookie", cookie)
+    .send({ ...data1 })
+    .expect(204);
+
+  await request(app)
+    .patch("/api/stats")
+    .set("Cookie", cookie)
+    .send({ ...data1 })
+    .expect(204);
+
+  await request(app)
+    .patch("/api/stats")
+    .set("Cookie", cookie)
+    .send({ ...data2 })
+    .expect(204);
+
+  const req2 = await request(app)
+    .get("/api/stats/latest")
+    .set("Cookie", cookie);
+  // console.log(req2.body);
+  expect(req2.body.correctEntry).toBe(50);
+});
+
+it("returns [] if no record in stats", async () => {
+  const { userId, cookie } = global.getSignIn();
+
+  const stats = Stats.build({ userId });
+  await stats.save();
+
+  const req1 = await request(app)
+    .get("/api/stats")
+    .set("Cookie", cookie)
+    .send({})
+    .expect(200);
+
+  expect(req1.body.totalReadInSec).toBe(0);
+
+  const req2 = await request(app)
+    .get("/api/stats/latest")
+    .set("Cookie", cookie);
+
+  // console.log(req2.body);
+  expect(req2.body).toEqual({});
+});
