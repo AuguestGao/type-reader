@@ -15,13 +15,17 @@ router.post(
   [
     body("displayName")
       .trim()
-      .not()
-      .isEmpty()
+      .notEmpty()
       .withMessage("Display name must not be empty")
       .escape(),
-    body("email").isEmail().withMessage("Email must be valid").normalizeEmail(),
+    body("email")
+      .notEmpty()
+      .isEmail()
+      .withMessage("Email must be valid")
+      .normalizeEmail(),
     body("password")
       .trim()
+      .notEmpty()
       .isLength({ min: 6 })
       .withMessage("Password must be at least 6 characters"),
     body("confirmPassword").custom((value, { req }) => {
@@ -32,10 +36,12 @@ router.post(
     }),
     body("question")
       .trim()
+      .notEmpty()
       .isLength({ min: 3 })
       .withMessage("Question must be at least 3 characters"),
     body("answer")
       .trim()
+      .notEmpty()
       .isLength({ min: 3 })
       .withMessage("Answer must be at least 3 characters"),
   ],

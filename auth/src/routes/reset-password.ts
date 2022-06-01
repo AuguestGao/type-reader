@@ -51,7 +51,7 @@ router.post(
 
     req.session = null;
 
-    res.status(200).send("Successfully reset password.");
+    res.status(204).send();
   }
 );
 
