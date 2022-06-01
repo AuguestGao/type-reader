@@ -48,7 +48,7 @@ it("returns a 400 when two passwords unmatching", async () => {
     .expect(400);
 });
 
-it("gets a 200 when everything goes well", async () => {
+it("gets a 204 when everything goes well", async () => {
   const cookie = await global.getForgotPasswordCookie();
 
   await request(app)
@@ -59,7 +59,7 @@ it("gets a 200 when everything goes well", async () => {
       password: "123123",
       confirmPassword: "123123",
     })
-    .expect(200);
+    .expect(204);
 
   await request(app)
     .post("/api/users/signin")
