@@ -1,9 +1,9 @@
 import { createContext, useState, ReactNode, useContext } from "react";
-import { TCurrentUser } from "../@types/auth";
+import { CurrentUser } from "../types";
 
 interface TAuthContext {
-  currentUser: TCurrentUser | null;
-  setCurrentUser: (currentUser: TCurrentUser) => void;
+  currentUser: CurrentUser | null;
+  setCurrentUser: (currentUser: CurrentUser) => void;
 }
 
 const defaultValue: TAuthContext = {

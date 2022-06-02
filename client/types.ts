@@ -1,5 +1,5 @@
 import { ChangeEvent } from "react";
-import { EntryState, Entry, PageHistory } from "@type-reader/common";
+import { Entry } from "@type-reader/common";
 
 export interface User {
   id: string;

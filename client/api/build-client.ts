@@ -1,5 +1,4 @@
 import axios, { AxiosRequestHeaders } from "axios";
-import { GetServerSidePropsContext, NextApiRequest } from "next";
 
 const buildClient = (headers: AxiosRequestHeaders) => {
   if (typeof window === "undefined") {

@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { Entry, EntryState, PageHistory } from "@type-reader/common";
+import { EntryState, PageHistory } from "@type-reader/common";
 import { BookBody, Page, Flip } from "../types";
 import { renderableEntries } from "../utils/renderable-entries";
 

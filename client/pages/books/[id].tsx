@@ -1,6 +1,5 @@
 import { FormEvent, useEffect } from "react";
 import type { GetServerSideProps } from "next";
-import Link from "next/link";
 import { useRouter } from "next/router";
 import { AxiosRequestHeaders } from "axios";
 
