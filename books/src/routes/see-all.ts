@@ -10,7 +10,6 @@ router.get("/api/books", requireAuth, async (req: Request, res: Response) => {
     "title",
     "_id",
     "author",
-    "",
   ]);
 
   res.status(200).send(books);

@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: paging-redis-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: paging-redis
+  template:
+    metadata:
+      labels:
+        app: paging-redis
+    spec:
+      containers:
+        - name: paging-redis
+          image: redis
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: paging-redis-srv
+spec:
+  selector:
+    app: paging-redis
+  ports:
+    - name: db
+      protocol: TCP
+      port: 6379
+      targetPort: 6379

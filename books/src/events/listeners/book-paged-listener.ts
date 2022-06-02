@@ -1,17 +1,18 @@
+import { Message } from "node-nats-streaming";
+import { queueGroupName } from "./queue-group-name";
 import {
-  IBookPagedEvent,
+  PagingCompletedEvent,
   Subjects,
   Listener,
   BookStatus,
 } from "@type-reader/common";
-import { Message } from "node-nats-streaming";
 import { Book } from "../../model/book";
 
-export class BookPagedListener extends Listener<IBookPagedEvent> {
-  readonly subject = Subjects.BookPaged;
-  queueGroupName = "books-service";
+export class PagingCompletedListener extends Listener<PagingCompletedEvent> {
+  readonly subject = Subjects.PagingCompleted;
+  queueGroupName = queueGroupName;
 
-  async onMessage(data: IBookPagedEvent["data"], msg: Message) {
+  async onMessage(data: PagingCompletedEvent["data"], msg: Message) {
     const { bookId, body } = data;
 
     await Book.findOneAndUpdate(
