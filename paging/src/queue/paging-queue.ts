@@ -13,8 +13,10 @@ const pagingQueue = new Queue<Payload>("book-paging-queue", {
 });
 
 pagingQueue.process(async (job) => {
+  const { bookId } = job.data;
+
   // todo publishing pageing:completed event
-  console.log(`JOB ${job.data.bookId} paging done.`);
+  console.log(`JOB ${bookId} paging done.`);
 });
 
 export { pagingQueue };

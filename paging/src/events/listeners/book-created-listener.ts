@@ -8,7 +8,8 @@ export class BookCreatedListener extends Listener<BookCreatedEvent> {
   queueGroupName = queueGroupName;
 
   async onMessage(data: BookCreatedEvent["data"], msg: Message) {
-    await pagingQueue.add({ ...data });
+    const { bookId, body } = data;
+    await pagingQueue.add({ bookId, body });
 
     msg.ack();
   }
