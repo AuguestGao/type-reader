@@ -27,6 +27,7 @@ router.post(
     await book.save();
 
     new BookCreatedPublisher(natsWrapper.client).publish({
+      userId: book.userId,
       bookId: book.id,
       body: book.body,
     });

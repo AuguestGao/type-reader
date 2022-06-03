@@ -64,7 +64,7 @@ bookmarkSchema.statics.build = (attrs: IBookmarkAttrs) => {
     totalSecOnBook: 0,
     pageIndex: 0,
     cursorIndex: 0,
-    prevText: "n/a",
+    prevText: "null",
   });
 };
 
