@@ -28,7 +28,7 @@ router.post(
 
     new BookCreatedPublisher(natsWrapper.client).publish({
       bookId: book.id,
-      userId: book.userId,
+      body: book.body,
     });
 
     res.status(201).send({ id: book._id, message: "Book created." });

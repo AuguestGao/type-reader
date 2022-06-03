@@ -22,7 +22,7 @@ router.patch(
       throw new NotFoundError();
     }
 
-    res.status(200).send({ id: book._id, message: "Book completed." });
+    res.status(204).send();
   }
 );
 

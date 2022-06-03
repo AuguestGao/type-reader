@@ -1,4 +1,4 @@
-import React, { FormEvent, ReactNode } from "react";
+import { FormEvent, ReactNode } from "react";
 
 import styles from "./styles.module.scss";
 

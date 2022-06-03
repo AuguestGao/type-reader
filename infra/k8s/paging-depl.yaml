@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: paging-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: paging
+  template:
+    metadata:
+      labels:
+        app: paging
+    spec:
+      containers:
+        - name: paging
+          image: auguestgao/type-reader-paging
+          env:
+            - name: NATS_CLUSTER_ID
+              value: "type-reader"
+            - name: NATS_CLIENT_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name # use k8s pod id
+            - name: NATS_URL
+              value: "http://nats-srv:4222"
+            - name: REDIS_HOST
+              value: paging-redis-srv

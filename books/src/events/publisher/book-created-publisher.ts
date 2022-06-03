@@ -1,5 +1,5 @@
-import { IBookCreatedEvent, Publisher, Subjects } from "@type-reader/common";
+import { BookCreatedEvent, Publisher, Subjects } from "@type-reader/common";
 
-export class BookCreatedPublisher extends Publisher<IBookCreatedEvent> {
+export class BookCreatedPublisher extends Publisher<BookCreatedEvent> {
   readonly subject = Subjects.BookCreated;
 }

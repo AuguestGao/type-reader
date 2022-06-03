@@ -24,7 +24,7 @@ router.delete(
       bookId: book._id,
       userId: book.userId,
     });
-    res.status(200).send({ id: book._id, message: "Book deleted." });
+    res.status(204).send();
   }
 );
 

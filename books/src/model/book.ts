@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { BookStatus } from "@type-reader/common";
+import { BookStatus, PageData } from "@type-reader/common";
 
 interface BookAttrs {
   userId: string;
@@ -13,10 +13,7 @@ interface BookDoc extends mongoose.Document {
   title: string;
   author: string;
   totalPages: number;
-  body: {
-    pageIndex: number;
-    pageContent: string[];
-  }[];
+  body: PageData[];
   status: BookStatus;
   createdAt: Date;
   updatedAt: Date;
@@ -86,7 +83,7 @@ bookSchema.statics.build = (attrs: BookAttrs) => {
       },
     ],
     status: BookStatus.Created,
- };
+  };
   return new Book(extendedAttrs);
 };
 
