@@ -68,6 +68,23 @@ const RecordSchema = new mongoose.Schema(
       required: true,
       min: 0,
     },
+    entryHistory: [
+      {
+        key: {
+          type: String,
+          required: true,
+        },
+        pressedKey: {
+          type: String,
+          required: true,
+        },
+        state: {
+          type: String,
+          enum: Object.values(EntryState),
+          required: true,
+        },
+      },
+    ],
     totalEntry: {
       type: Number,
       required: true,

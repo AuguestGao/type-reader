@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { IRecordDoc, Record, IRecordAttrs } from "./record";
+import { IRecordDoc, IRecordAttrs } from "./record";
 
 interface IStatsAttrs {
   userId: string;

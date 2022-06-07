@@ -1,6 +1,7 @@
 import request from "supertest";
 
 import { app } from "../../app";
+import { Record } from "../../model/record";
 import { Stats } from "../../model/stats";
 
 it("has a route handler listening to '/api/stats' for patch request", async () => {
@@ -37,7 +38,6 @@ it("updates stats right when everything goes well", async () => {
     incorrectEntry: 5,
     fixedEntry: 10,
     readInSec: 60,
-    pageHistory: global.getPageHistory(20, 5, 10),
     pageIndex: 10,
     cursorIndex: 50,
   };
@@ -45,18 +45,18 @@ it("updates stats right when everything goes well", async () => {
   await request(app)
     .patch("/api/stats")
     .set("Cookie", cookie)
-    .send({ ...data })
+    .send({ ...data, pageHistory: global.getPageHistory(1, 2, 3) })
     .expect(204);
 
   await request(app)
     .patch("/api/stats")
     .set("Cookie", cookie)
-    .send({ ...data })
+    .send({ ...data, pageHistory: global.getPageHistory(2, 4, 6) })
     .expect(204);
 
   await request(app)
     .patch("/api/stats")
     .set("Cookie", cookie)
-    .send({ ...data })
+    .send({ ...data, pageHistory: global.getPageHistory(1, 4, 8) })
     .expect(204);
 });

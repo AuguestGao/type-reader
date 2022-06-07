@@ -1,14 +1,4 @@
 import { ChangeEvent } from "react";
-// ! update Entry in common
-import { EntryState } from "@type-reader/common";
-// import { Entry } from "@type-reader/common";
-
-export interface Entry {
-  charIndex: string;
-  char: string;
-  pressedKey: string;
-  state: EntryState;
-}
 
 export interface User {
   id: string;
@@ -30,19 +20,6 @@ export interface Book {
 export interface BookBody {
   pageIndex: number;
   pageContent: string[][];
-}
-
-export interface Page {
-  pageIndex: number;
-  cursorIndex: string;
-  paragraphs: Paragraph[];
-  totalParagraphs: number;
-}
-
-export interface Paragraph {
-  paragraphIndex: number;
-  paragraphContent: Entry[];
-  totalEntries: number;
 }
 
 export enum Flip {
@@ -73,8 +50,4 @@ export interface IStats {
 export interface IBookStats {
   totalSecsOnBook: number;
   progress: number;
-}
-
-export interface PageHistory {
-  [key: string]: Page;
 }
