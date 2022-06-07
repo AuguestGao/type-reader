@@ -1,6 +1,12 @@
 import { useState, useRef } from "react";
-import { EntryState, Page, Paragraph, PageHistory } from "@type-reader/common";
-import { BookBody, Flip } from "../types";
+import {
+  EntryState,
+  Page,
+  Paragraph,
+  PageHistory,
+  BookBody,
+} from "@type-reader/common";
+import { Flip } from "../types";
 import { renderableEntries } from "../utils/renderable-entries";
 import { parseIndex } from "../utils/parse-index";
 

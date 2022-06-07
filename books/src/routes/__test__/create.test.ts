@@ -78,3 +78,5 @@ it("publishes a BookCreated event", async () => {
 
   expect(natsWrapper.client.publish).toHaveBeenCalled();
 });
+
+it.todo("only allow 3 books for a user");

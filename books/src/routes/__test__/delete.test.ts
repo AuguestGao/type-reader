@@ -78,7 +78,7 @@ it("should have 1 less book in the library after deleting a book", async () => {
   await request(app)
     .delete(`/api/books/${bookId}`)
     .set("Cookie", signInCookie)
-    .expect(200);
+    .expect(204);
 
   const res = await request(app)
     .get("/api/books")

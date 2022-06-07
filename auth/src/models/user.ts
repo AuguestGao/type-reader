@@ -36,9 +36,7 @@ const userSchema = new mongoose.Schema(
         delete ret._id;
         delete ret.password;
         delete ret.__v;
-        delete ret.question;
         delete ret.answer;
-        delete ret.email;
       },
     },
   }

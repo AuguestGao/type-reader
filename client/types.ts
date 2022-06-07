@@ -17,11 +17,6 @@ export interface Book {
   userId: string;
 }
 
-export interface BookBody {
-  pageIndex: number;
-  pageContent: string[][];
-}
-
 export enum Flip {
   Stay = "STAY", // stay on this page
   NextPage = "NEXT_PAGE",

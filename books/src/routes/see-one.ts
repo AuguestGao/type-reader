@@ -15,15 +15,7 @@ router.get(
   "/api/books/:id",
   requireAuth,
   async (req: Request, res: Response) => {
-    const book = await Book.findById(req.params.id).select([
-      "title",
-      "author",
-      "totalPages",
-      "body",
-      "createdAt",
-      "updatedAt",
-      "status",
-    ]);
+    const book = await Book.findById(req.params.id);
 
     if (!book) {
       throw new NotFoundError();
@@ -33,9 +25,9 @@ router.get(
       throw new NotAuthorizedError();
     }
 
-    if (book.status === BookStatus.Created) {
-      throw new InternalError("Book is under paging process.");
-    }
+    // if (book.status === BookStatus.Created) {
+    //   throw new InternalError("Book is under paging process.");
+    // }
 
     res.status(200).send(book);
   }

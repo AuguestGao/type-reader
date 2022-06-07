@@ -30,7 +30,7 @@ it("completes the book when the request is all good", async () => {
     .patch(`/api/books/${book1Id}`)
     .set("Cookie", signInCookie)
     .send({})
-    .expect(200);
+    .expect(204);
 
   const book1Req = await request(app)
     .get(`/api/books/${book1Id}`)

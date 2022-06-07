@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { BookStatus, PageData } from "@type-reader/common";
+import { BookStatus, BookBody } from "@type-reader/common";
 
 interface BookAttrs {
   userId: string;
@@ -13,7 +13,7 @@ interface BookDoc extends mongoose.Document {
   title: string;
   author: string;
   totalPages: number;
-  body: PageData[];
+  body: BookBody[];
   status: BookStatus;
   createdAt: Date;
   updatedAt: Date;
@@ -48,10 +48,12 @@ const bookSchema = new mongoose.Schema(
           required: true,
         },
         pageContent: [
-          {
-            type: String,
-            required: true,
-          },
+          [
+            {
+              type: String,
+              required: true,
+            },
+          ],
         ],
       },
     ],
@@ -73,13 +75,16 @@ const bookSchema = new mongoose.Schema(
 );
 
 bookSchema.statics.build = (attrs: BookAttrs) => {
+  const { userId, title, author, body } = attrs;
   const extendedAttrs = {
-    ...attrs,
+    userId,
+    title,
+    author,
     totalPages: 1,
     body: [
       {
         pageIndex: 0,
-        pageContent: [attrs.body],
+        pageContent: [[body]],
       },
     ],
     status: BookStatus.Created,
