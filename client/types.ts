@@ -1,5 +1,14 @@
 import { ChangeEvent } from "react";
-import { Entry } from "@type-reader/common";
+// ! update Entry in common
+import { EntryState } from "@type-reader/common";
+// import { Entry } from "@type-reader/common";
+
+export interface Entry {
+  charIndex: string;
+  char: string;
+  pressedKey: string;
+  state: EntryState;
+}
 
 export interface User {
   id: string;
@@ -20,22 +29,30 @@ export interface Book {
 
 export interface BookBody {
   pageIndex: number;
-  pageContent: string[];
+  pageContent: string[][];
 }
 
 export interface Page {
   pageIndex: number;
-  cursorIndex: number;
+  cursorIndex: string;
+  paragraphs: Paragraph[];
+  totalParagraphs: number;
+}
+
+export interface Paragraph {
+  paragraphIndex: number;
+  paragraphContent: Entry[];
   totalEntries: number;
-  entries: Entry[];
 }
 
 export enum Flip {
-  Next = "NEXT",
-  Previous = "PREVIOUS",
   Stay = "STAY", // stay on this page
-  NoMoreNext = "NO_MORE_NEXT", // at last page
-  NoMorePrevious = "NO_MORE_PREVIOUS", // at 1st page
+  NextPage = "NEXT_PAGE",
+  PrevPage = "PREV_PAGE",
+  NextParagraph = "NEXT_PARAGRAPH",
+  PrevParagraph = "PREV_PARAGRAPH",
+  NoNextPage = "NO_NEXT_PAGE", // at last page
+  NoPrevPage = "NO_PREV_PAGE", // at 1st page
 }
 
 export interface FormField {
@@ -56,4 +73,8 @@ export interface IStats {
 export interface IBookStats {
   totalSecsOnBook: number;
   progress: number;
+}
+
+export interface PageHistory {
+  [key: string]: Page;
 }

@@ -1,5 +1,5 @@
 import { IBookStats } from "../../types";
-import { getDHMSString } from "../../utils/convertSeconds";
+import { getDHMSString } from "../../utils/convert-seconds";
 import { ProgressBar } from "../ProgressBar";
 
 import styles from "./styles.module.scss";

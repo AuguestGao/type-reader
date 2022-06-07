@@ -1,5 +1,5 @@
 import { IStats } from "../../types";
-import { getDHMSString } from "../../utils/convertSeconds";
+import { getDHMSString } from "../../utils/convert-seconds";
 
 import styles from "./styles.module.scss";
 

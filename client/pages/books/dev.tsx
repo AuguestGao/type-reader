@@ -11,11 +11,12 @@ import {
   Entry,
   DigitalClock,
   BookStats,
+  Paragraph,
 } from "../../components";
 
 import styles from "../../styles/Book.module.scss";
 
-import { demoBook } from "../../utils/demoBook";
+import { demoBook } from "../../utils/demo-book";
 
 const Dev = () => {
   const {
@@ -33,6 +34,7 @@ const Dev = () => {
     isReadingPaused,
     toggleReadingPaused,
     bookCompleted,
+    pageHistory,
   } = useTypingAction(body);
 
   useEffect(() => {
@@ -65,6 +67,12 @@ const Dev = () => {
     },
   });
 
+  const startReadingClicked = (e: MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    toggleReadingPaused((prev) => !prev);
+    toggleShowTypable((prev) => !prev);
+  };
+
   const deleteBookClicked = (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     const bookId = router.pathname.replace("/books/", "");
@@ -84,7 +92,7 @@ const Dev = () => {
             <button
               type="button"
               className="btn btn-warning"
-              onClick={() => toggleShowTypable(true)}
+              onClick={startReadingClicked}
             >
               Start Reading
             </button>
@@ -105,12 +113,16 @@ const Dev = () => {
       ) : (
         <div>
           <Typable>
-            {page.entries.map(({ char, charIndex, state }) => (
-              <Entry
-                key={charIndex}
-                char={char}
-                state={charIndex === page.cursorIndex ? "current" : state}
-              />
+            {page.paragraphs.map(({ paragraphIndex, paragraphContent }) => (
+              <Paragraph key={paragraphIndex}>
+                {paragraphContent.map(({ char, charIndex, state }) => (
+                  <Entry
+                    key={charIndex}
+                    char={char}
+                    state={charIndex === page.cursorIndex ? "current" : state}
+                  />
+                ))}
+              </Paragraph>
             ))}
           </Typable>
 
@@ -126,7 +138,7 @@ const Dev = () => {
                   <button
                     type="button"
                     className="btn btn-light"
-                    onClick={() => console.log("add bk")}
+                    onClick={() => console.log(pageHistory)}
                   >
                     Add Bookmark
                   </button>
