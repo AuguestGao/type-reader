@@ -1,6 +1,6 @@
 import Image from "next/image";
 
-import { colorImageMap } from "../../utils/colorImageMap";
+import { colorImageMap } from "../../utils/color-image-map";
 
 import styles from "./styles.module.scss";
 

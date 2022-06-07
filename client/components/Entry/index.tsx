@@ -2,35 +2,31 @@ import styles from "./styles.module.scss";
 
 export const Entry = ({ char, state }: { char: string; state: string }) => {
   let renderChar: string;
+  let space: string;
 
   switch (char) {
     case " ":
       renderChar = "⎵";
+      space = "twoSpaces";
       break;
     case "TAB":
       renderChar = "↹";
+      space = "fourSpaces";
       break;
     case "ENTER":
       renderChar = "↵";
+      space = "twoSpaces";
       break;
     default:
       renderChar = char;
+      space = "";
   }
 
   return (
-    <div className={`${styles[state]} ${styles.main}`}>
-      <span
-        className={`${
-          renderChar === "⎵"
-            ? styles.twoSpaces
-            : renderChar === "↹"
-            ? styles.fourSpaces
-            : ""
-        }`}
-      >
-        {renderChar}
-      </span>
-      {renderChar === "↵" && <div className={styles.break}></div>}
-    </div>
+    <span
+      className={`${styles[state]} ${styles.main} ${space && styles[space]}`}
+    >
+      {renderChar}
+    </span>
   );
 };

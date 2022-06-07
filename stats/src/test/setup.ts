@@ -76,21 +76,37 @@ global.getPageHistory = (
   numCorrect: number,
   numIncorrect: number,
   numFixed: number
-) => {
+): PageHistory => {
   const pageHistory: PageHistory = {};
   let pageIndex = 0;
 
   if (numCorrect) {
     pageHistory[pageIndex.toString()] = {
       pageIndex,
-      cursorIndex: 0,
-      totalEntries: numCorrect,
-      entries: Array.from({ length: numCorrect }, () => ({
-        charIndex: 0,
-        char: "a",
-        pressedKey: "a",
-        state: EntryState.Correct,
-      })),
+      cursorIndex: "0,1",
+      totalParagraphs: 2,
+      paragraphs: [
+        {
+          paragraphIndex: 0,
+          paragraphContent: Array.from({ length: numCorrect }, () => ({
+            charIndex: "0,0",
+            char: "a",
+            pressedKey: "a",
+            state: EntryState.Correct,
+          })),
+          totalEntries: numCorrect,
+        },
+        {
+          paragraphIndex: 0,
+          paragraphContent: Array.from({ length: numCorrect }, () => ({
+            charIndex: "0,0",
+            char: "a",
+            pressedKey: "a",
+            state: EntryState.Correct,
+          })),
+          totalEntries: numCorrect,
+        },
+      ],
     };
 
     pageIndex += 1;
@@ -99,14 +115,20 @@ global.getPageHistory = (
   if (numIncorrect) {
     pageHistory[pageIndex.toString()] = {
       pageIndex,
-      cursorIndex: 0,
-      totalEntries: numIncorrect,
-      entries: Array.from({ length: numCorrect }, () => ({
-        charIndex: 0,
-        char: "a",
-        pressedKey: "b",
-        state: EntryState.Incorrect,
-      })),
+      cursorIndex: "0,2",
+      totalParagraphs: 1,
+      paragraphs: [
+        {
+          paragraphIndex: 0,
+          paragraphContent: Array.from({ length: numIncorrect }, () => ({
+            charIndex: "0,1",
+            char: "a",
+            pressedKey: "a",
+            state: EntryState.Incorrect,
+          })),
+          totalEntries: numIncorrect,
+        },
+      ],
     };
 
     pageIndex += 1;
@@ -115,14 +137,20 @@ global.getPageHistory = (
   if (numFixed) {
     pageHistory[pageIndex.toString()] = {
       pageIndex,
-      cursorIndex: 0,
-      totalEntries: numFixed,
-      entries: Array.from({ length: numFixed }, () => ({
-        charIndex: 0,
-        char: "a",
-        pressedKey: "a",
-        state: EntryState.Fixed,
-      })),
+      cursorIndex: "0,3",
+      totalParagraphs: 1,
+      paragraphs: [
+        {
+          paragraphIndex: 0,
+          paragraphContent: Array.from({ length: numFixed }, () => ({
+            charIndex: "0,2",
+            char: "a",
+            pressedKey: "a",
+            state: EntryState.Fixed,
+          })),
+          totalEntries: numFixed,
+        },
+      ],
     };
   }
 

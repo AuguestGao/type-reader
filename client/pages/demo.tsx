@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import Link from "next/link";
 
-import { demoBook } from "../utils/demoBook";
+import { demoBook } from "../utils/demo-book";
 import useTimer from "../hooks/use-timer";
 import useTypingAction from "../hooks/use-typing-action";
 import { Textile, Typable, Entry, DigitalClock, Stats } from "../components";

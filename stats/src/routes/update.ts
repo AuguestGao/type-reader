@@ -60,13 +60,17 @@ router.patch(
 
     let entryHistory: Key[] = [];
 
-    for (const history of Object.values(pageHistory)) {
-      const { entries } = history;
-      const pageEntries = entries.map(({ charIndex, char, ...rest }) => ({
-        key: char,
-        ...rest,
-      }));
-      entryHistory = entryHistory.concat(pageEntries);
+    for (const page of Object.values(pageHistory)) {
+      const { paragraphs } = page;
+      paragraphs.forEach(({ paragraphContent }) => {
+        const paragraphEntries = paragraphContent.map(
+          ({ charIndex, char, ...rest }) => ({
+            key: char,
+            ...rest,
+          })
+        );
+        entryHistory = entryHistory.concat(paragraphEntries);
+      });
     }
 
     const record = Record.build({

@@ -1,5 +1,4 @@
 import { ChangeEvent } from "react";
-import { Entry } from "@type-reader/common";
 
 export interface User {
   id: string;
@@ -20,22 +19,17 @@ export interface Book {
 
 export interface BookBody {
   pageIndex: number;
-  pageContent: string[];
-}
-
-export interface Page {
-  pageIndex: number;
-  cursorIndex: number;
-  totalEntries: number;
-  entries: Entry[];
+  pageContent: string[][];
 }
 
 export enum Flip {
-  Next = "NEXT",
-  Previous = "PREVIOUS",
   Stay = "STAY", // stay on this page
-  NoMoreNext = "NO_MORE_NEXT", // at last page
-  NoMorePrevious = "NO_MORE_PREVIOUS", // at 1st page
+  NextPage = "NEXT_PAGE",
+  PrevPage = "PREV_PAGE",
+  NextParagraph = "NEXT_PARAGRAPH",
+  PrevParagraph = "PREV_PARAGRAPH",
+  NoNextPage = "NO_NEXT_PAGE", // at last page
+  NoPrevPage = "NO_PREV_PAGE", // at 1st page
 }
 
 export interface FormField {

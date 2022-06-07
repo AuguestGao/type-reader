@@ -1,7 +1,8 @@
 import { useState, useRef } from "react";
-import { EntryState, PageHistory } from "@type-reader/common";
-import { BookBody, Page, Flip } from "../types";
+import { EntryState, Page, Paragraph, PageHistory } from "@type-reader/common";
+import { BookBody, Flip } from "../types";
 import { renderableEntries } from "../utils/renderable-entries";
+import { parseIndex } from "../utils/parse-index";
 
 const useTypingAction = (body: BookBody[], initialPageIndex = 0) => {
   const totalPages = useRef(body.length);
@@ -35,7 +36,7 @@ const useTypingAction = (body: BookBody[], initialPageIndex = 0) => {
     return pageHistory.current[pageIndex.toString()];
   };
 
-  const getInitPageState = (initialPageIndex: number) => {
+  const getInitPageState = (initialPageIndex: number): Page => {
     const historyFound = getHistory(initialPageIndex);
 
     // no history for the page
@@ -44,23 +45,48 @@ const useTypingAction = (body: BookBody[], initialPageIndex = 0) => {
         (page) => page.pageIndex === initialPageIndex
       )!.pageContent;
 
+      const totalParagraphs = pageContent.length;
+
+      const paragraphs: Paragraph[] = [];
+
+      for (
+        let paragraphIndex = 0;
+        paragraphIndex < totalParagraphs;
+        paragraphIndex++
+      ) {
+        const paragraphContent = pageContent[paragraphIndex].map(
+          (char, charIndex) => ({
+            charIndex: `${paragraphIndex},${charIndex}`,
+            char,
+            pressedKey: "",
+            state: EntryState.Untyped,
+          })
+        );
+
+        paragraphs.push({
+          paragraphIndex,
+          paragraphContent,
+          totalEntries: paragraphContent.length,
+        });
+      }
+
       return {
         pageIndex: initialPageIndex,
-        cursorIndex: 0,
-        entries: pageContent.map((char, charIndex) => ({
-          charIndex,
-          char,
-          pressedKey: "",
-          state: EntryState.Untyped,
-        })),
-        totalEntries: pageContent.length,
+        cursorIndex: "0,0",
+        paragraphs,
+        totalParagraphs,
       };
     }
 
     // found history
-    const { cursorIndex, entries, totalEntries } = historyFound;
+    const { cursorIndex, paragraphs, totalParagraphs } = historyFound;
 
-    return { pageIndex: initialPageIndex, cursorIndex, entries, totalEntries };
+    return {
+      pageIndex: initialPageIndex,
+      cursorIndex,
+      paragraphs,
+      totalParagraphs,
+    };
   };
 
   const [page, setPage] = useState<Page>(() =>
@@ -89,9 +115,11 @@ const useTypingAction = (body: BookBody[], initialPageIndex = 0) => {
   };
 
   const updateRenderableEntryState = (pressedKey: string) => {
-    const entriesCopy = [...page.entries];
+    const paragraphsCopy = page.paragraphs;
+    const [pIndex, cIndex] = parseIndex(page.cursorIndex);
+    const entriesCopy = paragraphsCopy[pIndex].paragraphContent;
 
-    const entryFocused = entriesCopy[page.cursorIndex];
+    const entryFocused = entriesCopy[cIndex];
     const oldState = entryFocused.state;
     let newState = oldState;
     const showedKey = entryFocused.char;
@@ -131,55 +159,83 @@ const useTypingAction = (body: BookBody[], initialPageIndex = 0) => {
     // update state if old !== new
     if (oldState !== newState) {
       entryFocused.state = newState;
-      setPage((prev) => ({ ...prev, entries: entriesCopy }));
+      entryFocused.pressedKey = pressedKey;
+      setPage((prev) => ({ ...prev, paragraphs: paragraphsCopy }));
     }
   };
 
   const updateCursorAndPage = (isForward: Boolean) => {
     let nextCursorIndex: number;
+    const [pIndex, cIndex] = parseIndex(page.cursorIndex);
 
-    isForward
-      ? (nextCursorIndex = page.cursorIndex + 1)
-      : (nextCursorIndex = page.cursorIndex - 1);
+    isForward ? (nextCursorIndex = cIndex + 1) : (nextCursorIndex = cIndex - 1);
 
-    const flipDirection = getFlipDirection(nextCursorIndex);
+    const flipDirection = getFlipInstruction(nextCursorIndex);
 
     switch (flipDirection) {
-      case Flip.Next:
-        updatePageHistory();
-        updatePageIndex(Flip.Next);
+      case Flip.NextParagraph:
+        setPage((prev) => ({
+          ...prev,
+          cursorIndex: `${pIndex + 1},0`,
+        }));
         break;
-      case Flip.Previous:
+      case Flip.PrevParagraph:
+        setPage((prev) => ({
+          ...prev,
+          cursorIndex: `${pIndex - 1},${
+            page.paragraphs[pIndex - 1].totalEntries - 1
+          }`,
+        }));
+        break;
+      case Flip.NextPage:
         updatePageHistory();
-        updatePageIndex(Flip.Previous);
+        updatePageIndex(Flip.NextPage);
+        break;
+      case Flip.PrevPage:
+        updatePageHistory();
+        updatePageIndex(Flip.PrevPage);
+        break;
+      case Flip.NoNextPage:
+        bookCompleted.current = true;
+        toggleReadingPaused(true);
+      case Flip.NoPrevPage:
+        updatePageHistory();
         break;
       case Flip.Stay:
         // only update cursor index
-        setPage((prev) => ({ ...prev, cursorIndex: nextCursorIndex }));
-        break;
-      case Flip.NoMoreNext:
-        bookCompleted.current = true;
-      case Flip.NoMorePrevious:
-        updatePageHistory();
-        toggleReadingPaused(true);
+        setPage((prev) => ({
+          ...prev,
+          cursorIndex: `${pIndex},${nextCursorIndex}`,
+        }));
         break;
       default:
         console.log("Invalise Flip case");
     }
   };
 
-  const getFlipDirection = (nextCursorIndex: number): Flip => {
-    if (nextCursorIndex >= page.totalEntries) {
-      if (page.pageIndex + 1 < totalPages.current) {
-        return Flip.Next;
+  const getFlipInstruction = (nextCursorIndex: number): Flip => {
+    const [pIndex, cIndex] = parseIndex(page.cursorIndex);
+    const currParagraph = page.paragraphs[pIndex];
+
+    if (nextCursorIndex >= currParagraph.totalEntries) {
+      if (currParagraph.paragraphIndex + 1 >= page.totalParagraphs) {
+        if (page.pageIndex + 1 < totalPages.current) {
+          return Flip.NextPage;
+        } else {
+          return Flip.NoNextPage;
+        }
       } else {
-        return Flip.NoMoreNext;
+        return Flip.NextParagraph;
       }
     } else if (nextCursorIndex < 0) {
-      if (page.pageIndex - 1 >= 0) {
-        return Flip.Previous;
+      if (currParagraph.paragraphIndex - 1 < 0) {
+        if (page.pageIndex - 1 >= 0) {
+          return Flip.PrevPage;
+        } else {
+          return Flip.NoPrevPage;
+        }
       } else {
-        return Flip.NoMorePrevious;
+        return Flip.PrevParagraph;
       }
     } else {
       return Flip.Stay;
@@ -191,7 +247,7 @@ const useTypingAction = (body: BookBody[], initialPageIndex = 0) => {
   };
 
   const updatePageIndex = (direction: Flip) => {
-    const isForward = direction === Flip.Next;
+    const isForward = direction === Flip.NextPage;
     let nextPageIndex = page.pageIndex;
     isForward ? (nextPageIndex += 1) : (nextPageIndex -= 1);
     setPage(getInitPageState(nextPageIndex));
@@ -208,6 +264,7 @@ const useTypingAction = (body: BookBody[], initialPageIndex = 0) => {
     toggleReadingPaused,
     bookCompleted,
     getStats,
+    pageHistory,
   };
 };
 
