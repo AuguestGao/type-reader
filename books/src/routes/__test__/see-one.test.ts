@@ -1,6 +1,7 @@
 import request from "supertest";
 
 import { app } from "../../app";
+import { Book } from "../../model/book";
 
 it("returns the book when the request is all good", async () => {
   const signInCookie = global.getSignInCookie();
@@ -11,22 +12,17 @@ it("returns the book when the request is all good", async () => {
     author: "1",
   });
 
-  await request(app).post("/api/books").set("Cookie", signInCookie).send({
-    title: "2",
-    body: "2",
-    author: "2",
-  });
-
-  const allBooksReq = await request(app)
-    .get("/api/books")
+  const res = await request(app)
+    .post("/api/books")
     .set("Cookie", signInCookie)
-    .send({})
-    .expect(200);
-
-  const bookId = allBooksReq.body[1].id;
+    .send({
+      title: "2",
+      body: "2",
+      author: "2",
+    });
 
   const oneBookReq = await request(app)
-    .get(`/api/books/${bookId}`)
+    .get(`/api/books/${res.body.id}`)
     .set("Cookie", signInCookie)
     .send({})
     .expect(200);
@@ -34,10 +30,10 @@ it("returns the book when the request is all good", async () => {
   expect(oneBookReq.body!.title).toEqual("2");
 });
 
-it("only returns user's own book with correct book id", async () => {
+it("gets the correct book for the user with the correct bookId", async () => {
   const signInCookie1 = global.getSignInCookie();
 
-  await request(app)
+  const res1 = await request(app)
     .post("/api/books")
     .set("Cookie", signInCookie1)
     .send({
@@ -69,27 +65,19 @@ it("only returns user's own book with correct book id", async () => {
     })
     .expect(201);
 
-  const allBooksReq = await request(app)
-    .get("/api/books")
-    .set("Cookie", signInCookie2)
+  const user1Req = await request(app)
+    .get(`/api/books/${res1.body.id}`)
+    .set("Cookie", signInCookie1)
     .send({})
     .expect(200);
 
-  const bookId = allBooksReq.body[0].id;
-
-  const oneBookReq = await request(app)
-    .get(`/api/books/${bookId}`)
-    .set("Cookie", signInCookie2)
-    .send({})
-    .expect(200);
-
-  expect(oneBookReq.body!.title).toEqual("3");
+  expect(user1Req.body!.title).toEqual("1");
 });
 
 it("returns 401 if a user asks for another user's book", async () => {
   const signInCookie1 = global.getSignInCookie();
 
-  await request(app)
+  const res1 = await request(app)
     .post("/api/books")
     .set("Cookie", signInCookie1)
     .send({
@@ -121,17 +109,11 @@ it("returns 401 if a user asks for another user's book", async () => {
     })
     .expect(201);
 
-  const allBooksReq = await request(app)
-    .get("/api/books")
+  await request(app)
+    .get(`/api/books/${res1.body.id}`)
     .set("Cookie", signInCookie2)
-    .send({})
-    .expect(200);
-
-  const bookId = allBooksReq.body[0].id;
-
-  const oneBookReq = await request(app)
-    .get(`/api/books/${bookId}`)
-    .set("Cookie", signInCookie1)
     .send({})
     .expect(401);
 });
+
+it.todo("return 500 if a book has not been done parsing");
