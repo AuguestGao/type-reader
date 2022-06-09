@@ -41,6 +41,8 @@ const Dev = () => {
     const keyDownHandler = (e: KeyboardEvent) => {
       e.preventDefault();
 
+      console.log(e.key);
+
       if (!isReadingPaused) {
         performAction(e.key);
       }
