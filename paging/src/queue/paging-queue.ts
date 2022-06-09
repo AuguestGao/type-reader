@@ -1,9 +1,12 @@
 import Queue from "bull";
-import { PageData } from "@type-reader/common";
+import { PagingCompletedPublisher } from "../events/publishers/paging-completed-publisher";
+import { BookBody } from "@type-reader/common";
+import { pageBook } from "../utils/page-book";
+import { natsWrapper } from "../nats-wrapper";
 
 interface Payload {
   bookId: string;
-  body: PageData[];
+  body: BookBody[];
 }
 
 const pagingQueue = new Queue<Payload>("book-paging-queue", {
@@ -13,10 +16,14 @@ const pagingQueue = new Queue<Payload>("book-paging-queue", {
 });
 
 pagingQueue.process(async (job) => {
-  const { bookId } = job.data;
+  let { body } = job.data;
 
-  // todo publishing pageing:completed event
-  console.log(`JOB ${bookId} paging done.`);
+  body = pageBook(body);
+
+  new PagingCompletedPublisher(natsWrapper.client).publish({
+    bookId: job.data.bookId,
+    body,
+  });
 });
 
 export { pagingQueue };
