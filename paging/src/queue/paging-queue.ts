@@ -18,7 +18,11 @@ const pagingQueue = new Queue<Payload>("book-paging-queue", {
 pagingQueue.process(async (job) => {
   let { body } = job.data;
 
+  console.log("body before", body);
+
   body = pageBook(body);
+
+  console.log("body after", body);
 
   new PagingCompletedPublisher(natsWrapper.client).publish({
     bookId: job.data.bookId,

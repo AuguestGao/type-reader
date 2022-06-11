@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 
 import { app } from "./app";
 import { natsWrapper } from "./nats-wrapper";
+import { PagingCompletedListener } from "./events/listeners/paging-completed-listener";
 
 const start = async () => {
   if (!process.env.NATS_CLUSTER_ID) {
@@ -33,6 +34,8 @@ const start = async () => {
 
     process.on("SIGINT", () => natsWrapper.client.close());
     process.on("SIGTERM", () => natsWrapper.client.close());
+
+    new PagingCompletedListener(natsWrapper.client).listen();
 
     await mongoose.connect(process.env.MONGO_URI);
     console.log("Connected to Mongo DB.");

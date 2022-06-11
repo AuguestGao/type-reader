@@ -15,10 +15,19 @@ export class PagingCompletedListener extends Listener<PagingCompletedEvent> {
   async onMessage(data: PagingCompletedEvent["data"], msg: Message) {
     const { bookId, body } = data;
 
-    await Book.findOneAndUpdate(
-      { bookId },
-      { body, status: BookStatus.Paged, totalPages: body.length }
-    );
+    const book = await Book.findById(bookId);
+
+    if (!book) {
+      throw new Error("Book not found");
+    }
+
+    book.set({
+      body,
+      status: BookStatus.Paged,
+      totalPages: body.length,
+    });
+
+    await book.save();
 
     msg.ack();
   }

@@ -1,5 +1,5 @@
 import { BookBody } from "@type-reader/common";
-import { regexList } from "./regex-list";
+import { buildPageContent } from "./build-page";
 
 export const pageBook = (body: BookBody[]) => {
   const numWordsOnPage = 30;
@@ -14,9 +14,9 @@ export const pageBook = (body: BookBody[]) => {
   const rawParagraphs = rawBody.split(re);
 
   let carriedWords: string[] = [];
+  let words: string[] = [];
 
   while (rawParagraphs.length) {
-    pageContent = [];
     const paragraph = rawParagraphs.shift();
 
     if (
@@ -26,7 +26,7 @@ export const pageBook = (body: BookBody[]) => {
       continue;
     }
 
-    let words = carriedWords.concat(paragraph!.split(" "));
+    words = carriedWords.concat(paragraph!.split(" "));
 
     // carry the process to next paragraph if less than pre-decided number of words
     if (words.length < numWordsOnPage) {
@@ -34,33 +34,20 @@ export const pageBook = (body: BookBody[]) => {
       continue;
     }
 
-    let chars: string[] = [];
-
     carriedWords = words.slice(numWordsOnPage);
     words = words.slice(0, numWordsOnPage);
 
-    for (let word of words) {
-      if (word === "↵") {
-        pageContent.push(chars);
-        chars = [];
-        continue;
-      }
+    pageContent = buildPageContent(words);
+    pagedBody.push({ pageIndex, pageContent });
+    pageIndex++;
+    words = [];
+  }
 
-      Object.values(regexList).forEach(
-        ({ re, replacedBy }) => (word = word.replace(re, replacedBy))
-      );
+  while (carriedWords.length) {
+    words = carriedWords.slice(0, numWordsOnPage);
+    carriedWords = carriedWords.slice(numWordsOnPage);
 
-      for (let w of word) {
-        if (w === "”") {
-          chars.push('"');
-          continue;
-        }
-
-        chars.push(w);
-      }
-      chars.push(" ");
-    }
-    pageContent.push(chars);
+    pageContent = buildPageContent(words);
     pagedBody.push({ pageIndex, pageContent });
     pageIndex++;
   }

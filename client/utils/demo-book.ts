@@ -6,9 +6,7 @@
 const meta = {
   title: "Alice's Adventures in Wonderland",
   author: "Lewis Carroll",
-  id: "id_123",
-  userId: "user_321",
-  version: "0",
+  totalPages: 3,
 };
 
 const body = [

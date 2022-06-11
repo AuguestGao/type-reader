@@ -29,7 +29,7 @@ const Books = ({ books }: { books: IBookInfo[] | [] }) => {
     <Textile>
       <h1>Book shelf</h1>
       {books.length === 0 ? (
-        <p className="text-center text-white">Empty shelf...</p>
+        <p className="text-center text-white">3 book slots left, add one now</p>
       ) : (
         <ul className={styles.bookUl}>
           {books.map((book) => (
