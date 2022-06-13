@@ -1,7 +1,7 @@
 import { pageBook } from "../page-book";
 
 it("returns paragraphs", () => {
-  let text = `Alice was\nbob is\nAlice was\nbob is\nAlice was\nbob is\nAlice was\nbob is\nAlice was\nbob is\nAlice was\nbob is\nAlice was\nbob is\nAlice was\nbob is\nAlice was\nbob is\nAlice was\nbob is\nAlice was\nbob is\nAlice was\nbob is\nAlice was\nbob is\nAlice was\nbob is\nAlice was\nbob is\nAlice was\nbob is\nAlice was\nbob is\nAlice was\nbob is\nAlice was\nbob is\nAlice was\nbob is\nAlice was\nbob is\nAlice was\nbob is\nAlice was\nbob is\nAlice was\nbob is\nAlice was\nbob is\nAlice was\nbob is\nAlice was\nbob is\nAlice was\nbob is\nAlice was\nbob is\nAlice was\nbob is\nAlice was\nbob is\nAlice was\nbob is\nAlice was\nbob is\nAlice was\nbob is\nAlice was\nbob is\nAlice was\nbob is\nAlice was\nbob is\nAlice was\nbob is\nAlice was\nbob is\nAlice was\nbob is\nAlice was\nbob is\nAlice was\nbob is\nAlice was\nbob is\nAlice was\nbob is\nAlice was\nbob is\nAlice was\nbob is\nAlice was\nbob is\nAlice was\nbob is\nAlice was\nbob is\nAlice was\nbob is\nAlice was\nbob is\nAlice was\nbob is\nAlice was\nbob is\nAlice was\nbob is\nAlice was\nbob is\nAlice was\nbob is\nAlice was\nbob is\nAlice was\nbob is\nAlice was\nbob is\nAlice was\nbob is\nAlice was\nbob is\nAlice was\nbob is\n`;
+  let text = "11\n1\n111";
 
   let res = pageBook([
     {
@@ -10,9 +10,9 @@ it("returns paragraphs", () => {
     },
   ]);
 
-  console.log(res);
-  console.log(res[0].pageContent);
-  // console.log(res[1].pageContent);
+  // console.log(res);
+  // console.log(res[14].pageContent);
+  // console.log(res.length);
 
   expect(res!.length).toBeGreaterThan(0);
 });

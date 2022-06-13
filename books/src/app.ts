@@ -14,7 +14,7 @@ import { completeBookRouter } from "./routes/complete";
 const app = express();
 
 app.set("trust proxy", true);
-app.use(json());
+app.use(json({ limit: "1mb" }));
 app.use(
   cookieSession({
     signed: false,

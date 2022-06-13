@@ -10,6 +10,7 @@ import buildClient from "../../api/build-client";
 import { useAuth } from "../../context/user-context";
 import useTimer from "../../hooks/use-timer";
 import useTypingAction from "../../hooks/use-typing-action";
+import { doRequest } from "../../api/do-request";
 import {
   Textile,
   Typable,
@@ -38,7 +39,13 @@ interface BookmarkProps {
   prevText: string;
 }
 
-const OneBook = ({ book }: { book: BookProps }) => {
+const OneBook = ({
+  book,
+  bookmark,
+}: {
+  book: BookProps;
+  bookmark: BookmarkProps;
+}) => {
   const router = useRouter();
   const { currentUser } = useAuth();
 
@@ -48,18 +55,12 @@ const OneBook = ({ book }: { book: BookProps }) => {
     }
   }, [currentUser]);
 
-  // useEffect(() => {
-  //   if (!book) {
-  //     router.push("/books");
-  //   }
-  // }, []);
-
-  // const [err, setErr] = useState(typeof error === "undefined" ? null : error);
-
   const {
-    meta: { title, author, bookId },
+    meta: { title, author, bookId, totalPages },
     body,
   } = book;
+
+  const { pageIndex, cursorIndex, totalSecOnBook, prevText } = bookmark;
 
   const [showTypable, toggleShowTypable] = useState(false);
   const { startTimer, stopTimer, readInSec } = useTimer();
@@ -71,13 +72,13 @@ const OneBook = ({ book }: { book: BookProps }) => {
     toggleReadingPaused,
     bookCompleted,
     pageHistory,
-  } = useTypingAction(body);
+    stats,
+    updatePageHistory,
+  } = useTypingAction(body, totalPages, pageIndex);
 
   useEffect(() => {
     const keyDownHandler = (e: KeyboardEvent) => {
       e.preventDefault();
-
-      console.log(e.key);
 
       if (!isReadingPaused) {
         performAction(e.key);
@@ -95,15 +96,21 @@ const OneBook = ({ book }: { book: BookProps }) => {
     isReadingPaused ? stopTimer() : startTimer();
   }, [isReadingPaused]);
 
-  const { doRequest, errors } = useRequest({
-    url: `/api/books/${encodeURIComponent(bookId)}`,
-    method: "delete",
-    body: {},
+  useEffect(() => {
+    updatePageHistory();
 
-    onSuccess: () => {
-      router.push("/books");
-    },
-  });
+    const completeTheBook = async () => {
+      await doRequest({
+        url: `/api/books/${encodeURIComponent(bookId)}`,
+        method: "patch",
+        body: {},
+      });
+    };
+
+    completeTheBook();
+  }, [bookCompleted]);
+
+  const [error, setError] = useState<null | ReactNode>(null);
 
   const startReadingClicked = (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -111,15 +118,50 @@ const OneBook = ({ book }: { book: BookProps }) => {
     toggleShowTypable((prev) => !prev);
   };
 
-  const deleteBookClicked = (e: MouseEvent<HTMLButtonElement>) => {
+  const deleteBookClicked = async (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    const bookId = router.pathname.replace("/books/", "");
-    console.log(bookId);
+
+    const { errors } = await doRequest({
+      url: `/api/books/${encodeURIComponent(bookId)}`,
+      method: "delete",
+      body: {},
+    });
+
+    if (errors) {
+      setError(errors);
+    } else {
+      router.push("/books");
+    }
   };
 
-  // if (err) {
-  //   return <Textile>{err}</Textile>;
-  // }
+  const addBookmarkClicked = async (e: MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+
+    const { correctEntry, incorrectEntry, fixedEntry } = stats.current;
+    updatePageHistory();
+    console.log(pageHistory);
+
+    const { errors } = await doRequest({
+      url: "/api/stats",
+      method: "patch",
+      body: {
+        bookId,
+        correctEntry,
+        incorrectEntry,
+        fixedEntry,
+        readInSec,
+        pageHistory: pageHistory.current,
+        pageIndex,
+        cursorIndex,
+      },
+    });
+
+    if (errors) {
+      setError(errors);
+    } else {
+      router.push("/statistics/latest");
+    }
+  };
 
   return (
     <Textile>
@@ -128,11 +170,16 @@ const OneBook = ({ book }: { book: BookProps }) => {
         {author !== "Unknown" && <p>by {author}</p>}
       </div>
 
-      {/* {<div>{error}</div>} */}
+      {<div>{error}</div>}
 
       {!showTypable ? (
         <div>
-          <BookStats data={{ totalSecsOnBook: 1234, progress: 23 }} />
+          <BookStats
+            data={{
+              totalSecOnBook,
+              progress: Math.round(((pageIndex + 1) / totalPages) * 100),
+            }}
+          />
           <div className="d-grid gap-2 mt-5 col-6 mx-auto">
             <button
               type="button"
@@ -187,7 +234,7 @@ const OneBook = ({ book }: { book: BookProps }) => {
                   <button
                     type="button"
                     className="btn btn-light"
-                    onClick={() => console.log(pageHistory)}
+                    onClick={addBookmarkClicked}
                   >
                     Add Bookmark
                   </button>
@@ -220,50 +267,28 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const headers = context.req.headers as AxiosRequestHeaders;
   const client = buildClient(headers);
 
-  // if (!context.params?.id) {
-  //   return {
-  //     props: {
-  //       book: null,
-  //     },
-  //   };
-  // }
-
   const bookId = context.params!.id as string;
 
-  // try {
-  const res = await client.get(`/api/books/${encodeURIComponent(bookId)}`);
+  const bookRes = await client.get(`/api/books/${encodeURIComponent(bookId)}`);
+  const bookmarkRes = await client.get(
+    `/api/bookmark/${encodeURIComponent(bookId)}`
+  );
 
-  if (res.status !== 200) {
+  if (bookRes.status !== 200 || bookmarkRes.status !== 200) {
     return {
       notFound: true,
     };
   }
 
-  const book: BookBody = res.data;
+  const book: BookBody = bookRes.data;
+  const bookmark: BookmarkProps = bookmarkRes.data;
+
   return {
     props: {
       book,
+      bookmark,
     },
   };
-  // } catch (err) {
-  // const errors = err as AxiosError;
-  // console.log(err.message);
-  // const errorMessage = (
-  //   <div className="alert alert-danger">
-  //     <ul className="my-0">
-  //       {errors.response!.data.errors.map((error: { message: string }) => (
-  //         <li key={error.message}>{error.message}</li>
-  //       ))}
-  //     </ul>
-  //   </div>
-  // );
-
-  // return {
-  //   props: {
-  //     error: JSON.stringify(err),
-  //   },
-  // };
-  // }
 };
 
 export default OneBook;

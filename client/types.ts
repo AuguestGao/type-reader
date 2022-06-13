@@ -43,6 +43,16 @@ export interface IStats {
 }
 
 export interface IBookStats {
-  totalSecsOnBook: number;
+  totalSecOnBook: number;
   progress: number;
+}
+
+export interface IRecordProps {
+  readInSec: number;
+  totalEntry: number;
+  accuracy: number;
+  wpm: number;
+  netWpm: number;
+  kpm: number;
+  createdAt: string;
 }

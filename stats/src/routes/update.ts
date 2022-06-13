@@ -35,7 +35,7 @@ router.patch(
     body("readInSec").exists().isInt({ min: 0 }).withMessage("Invalid entry"),
     body("pageHistory").exists().isObject().withMessage("Invalid entry"),
     body("pageIndex").exists().isInt({ min: 0 }).withMessage("Invalid entry"),
-    body("cursorIndex").exists().isInt({ min: 0 }).withMessage("Invalid entry"),
+    body("cursorIndex").exists().isString().withMessage("Invalid entry"),
   ],
   validateRequest,
   async (req: Request, res: Response) => {
@@ -62,15 +62,17 @@ router.patch(
 
     for (const page of Object.values(pageHistory)) {
       const { paragraphs } = page;
-      paragraphs.forEach(({ paragraphContent }) => {
-        const paragraphEntries = paragraphContent.map(
-          ({ charIndex, char, ...rest }) => ({
+
+      for (let p of paragraphs) {
+        const paragraphEntries = p.paragraphContent.map(
+          ({ char, pressedKey, state }) => ({
             key: char,
-            ...rest,
+            pressedKey,
+            state,
           })
         );
         entryHistory = entryHistory.concat(paragraphEntries);
-      });
+      }
     }
 
     const record = Record.build({

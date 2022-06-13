@@ -14,7 +14,18 @@ router.get(
         userId: req.currentUser!.id,
       },
       { records: { $slice: -1 } }
-    ).populate("records");
+    ).populate({
+      path: "records",
+      select: [
+        "readInSec",
+        "totalEntry",
+        "accuracy",
+        "wpm",
+        "netWpm",
+        "kpm",
+        "createdAt",
+      ],
+    });
 
     if (!stats) {
       throw new NotFoundError();

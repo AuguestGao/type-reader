@@ -1,11 +1,12 @@
 import { regexList } from "./regex-list";
 
 export const buildPageContent = (words: string[]) => {
-  let chars: string[] = [];
   const pageContent: string[][] = [];
+  let chars: string[] = [];
 
   for (let word of words) {
     if (word === "↵") {
+      chars[chars.length - 1] = "↵";
       pageContent.push(chars);
       chars = [];
       continue;
@@ -23,7 +24,12 @@ export const buildPageContent = (words: string[]) => {
 
       chars.push(w);
     }
+
     chars.push(" ");
+  }
+
+  if (words[words.length - 1] !== "↵") {
+    pageContent.push(chars);
   }
 
   return pageContent;

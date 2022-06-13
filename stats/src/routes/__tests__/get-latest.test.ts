@@ -31,7 +31,7 @@ it("returns latest stats if everything is good", async () => {
     readInSec: 60,
     pageHistory: global.getPageHistory(20, 5, 10),
     pageIndex: 10,
-    cursorIndex: 50,
+    cursorIndex: "0,30",
   };
 
   const data2 = {
@@ -42,7 +42,7 @@ it("returns latest stats if everything is good", async () => {
     readInSec: 51,
     pageHistory: global.getPageHistory(50, 0, 1),
     pageIndex: 7,
-    cursorIndex: 1,
+    cursorIndex: "10,225",
   };
 
   await request(app)
@@ -66,11 +66,12 @@ it("returns latest stats if everything is good", async () => {
   const req2 = await request(app)
     .get("/api/stats/latest")
     .set("Cookie", cookie);
-  // console.log(req2.body);
-  expect(req2.body.correctEntry).toBe(50);
+
+  // console.log("res2.body =>", req2.body);
+  expect(req2.body.totalEntry).toBe(50);
 });
 
-it("returns [] if no record in stats", async () => {
+it("returns {} if no record in stats", async () => {
   const { userId, cookie } = global.getSignIn();
 
   const stats = Stats.build({ userId });
@@ -84,10 +85,11 @@ it("returns [] if no record in stats", async () => {
 
   expect(req1.body.totalReadInSec).toBe(0);
 
-  const req2 = await request(app)
+  const res2 = await request(app)
     .get("/api/stats/latest")
-    .set("Cookie", cookie);
+    .set("Cookie", cookie)
+    .expect(200);
 
-  // console.log(req2.body);
-  expect(req2.body).toEqual({});
+  // console.log(res2.body);
+  expect(res2.body).toEqual({});
 });

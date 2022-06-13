@@ -30,7 +30,7 @@ it("returns userStats if everything is good", async () => {
     readInSec: 60,
     pageHistory: global.getPageHistory(20, 5, 10),
     pageIndex: 10,
-    cursorIndex: 50,
+    cursorIndex: "0,200",
   };
 
   await request(app)

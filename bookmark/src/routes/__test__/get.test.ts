@@ -2,8 +2,6 @@ import request from "supertest";
 
 import { Bookmark } from "../../model/bookmark";
 import { app } from "../../app";
-import { natsWrapper } from "../../nats-wrapper";
-import mongoose from "mongoose";
 
 it("returns 401 when an existing bookmark does not belong to the user", async () => {
   const book1 = global.getBookId();
@@ -17,9 +15,9 @@ it("returns 401 when an existing bookmark does not belong to the user", async ()
   await bk2.save();
 
   await request(app)
-    .get("/api/bookmark")
+    .get(`/api/bookmark/${book2}`)
     .set("Cookie", user1.cookie)
-    .send({ bookId: book2 })
+    .send()
     .expect(401);
 });
 
@@ -32,16 +30,16 @@ it("returns 400 with an invalid bookId", async () => {
 
   // id is not legit
   await request(app)
-    .get("/api/bookmark")
+    .get("/api/bookmark/911")
     .set("Cookie", user1.cookie)
-    .send({ bookId: "1561" })
+    .send()
     .expect(404);
 
   // id is legit but not exist
   await request(app)
-    .get("/api/bookmark")
+    .get(`/api/bookmark/${global.getBookId()}`)
     .set("Cookie", user1.cookie)
-    .send({ bookId: global.getBookId() })
+    .send()
     .expect(404);
 });
 
@@ -57,17 +55,17 @@ it("returns 200 when all is good", async () => {
   await bk2.save();
 
   const req1 = await request(app)
-    .get("/api/bookmark")
+    .get(`/api/bookmark/${book1}`)
     .set("Cookie", user1.cookie)
-    .send({ bookId: book1 })
+    .send()
     .expect(200);
 
   expect(req1.body.totalSecOnBook).toBe(0);
 
   const req2 = await request(app)
-    .get("/api/bookmark")
+    .get(`/api/bookmark/${book2}`)
     .set("Cookie", user2.cookie)
-    .send({ bookId: book2 })
+    .send()
     .expect(200);
 
   expect(req2.body.pageIndex).toBe(0);

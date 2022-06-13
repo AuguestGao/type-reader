@@ -5,6 +5,7 @@ import {
   Subjects,
   Listener,
   BookStatus,
+  NotFoundError,
 } from "@type-reader/common";
 import { Book } from "../../model/book";
 
@@ -18,7 +19,7 @@ export class PagingCompletedListener extends Listener<PagingCompletedEvent> {
     const book = await Book.findById(bookId);
 
     if (!book) {
-      throw new Error("Book not found");
+      throw new NotFoundError();
     }
 
     book.set({

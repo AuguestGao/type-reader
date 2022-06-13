@@ -1,8 +1,8 @@
 import { BookBody } from "@type-reader/common";
-import { buildPageContent } from "./build-page";
+import { buildPageContent } from "./build-page-content";
 
 export const pageBook = (body: BookBody[]) => {
-  const numWordsOnPage = 30;
+  const numWordsOnPage = 120;
 
   let { pageIndex, pageContent } = body[0];
   const rawBody = pageContent[0][0];
@@ -26,7 +26,7 @@ export const pageBook = (body: BookBody[]) => {
       continue;
     }
 
-    words = carriedWords.concat(paragraph!.split(" "));
+    words = carriedWords.concat(paragraph.split(" "));
 
     // carry the process to next paragraph if less than pre-decided number of words
     if (words.length < numWordsOnPage) {
@@ -38,6 +38,7 @@ export const pageBook = (body: BookBody[]) => {
     words = words.slice(0, numWordsOnPage);
 
     pageContent = buildPageContent(words);
+
     pagedBody.push({ pageIndex, pageContent });
     pageIndex++;
     words = [];

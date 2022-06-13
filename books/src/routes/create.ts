@@ -1,12 +1,17 @@
 import { Router, Request, Response } from "express";
 import { body } from "express-validator";
-import { requireAuth, validateRequest } from "@type-reader/common";
+import {
+  requireAuth,
+  validateRequest,
+  BadRequestError,
+} from "@type-reader/common";
 
 import { BookCreatedPublisher } from "../events/publisher/book-created-publisher";
 import { natsWrapper } from "../nats-wrapper";
 import { Book } from "../model/book";
 
 const router = Router();
+const BOOK_LIMIT = 3;
 
 router.post(
   "/api/books",
@@ -17,11 +22,21 @@ router.post(
   ],
   validateRequest,
   async (req: Request, res: Response) => {
+    const userId = req.currentUser!.id;
+
+    const numberBooks = await Book.countDocuments({ userId });
+
+    if (numberBooks >= BOOK_LIMIT) {
+      throw new BadRequestError(
+        "You have 3 books on hand, why not finishing some first?"
+      );
+    }
+
     const { title, body, author } = req.body;
     const book = Book.build({
       title,
       body,
-      userId: req.currentUser!.id,
+      userId,
       author: author ? author : "Anonymous",
     });
     await book.save();

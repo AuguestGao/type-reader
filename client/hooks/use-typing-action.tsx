@@ -10,8 +10,11 @@ import { Flip } from "../types";
 import { renderableEntries } from "../utils/renderable-entries";
 import { parseIndex } from "../utils/parse-index";
 
-const useTypingAction = (body: BookBody[], initialPageIndex = 0) => {
-  const totalPages = useRef(body.length);
+const useTypingAction = (
+  body: BookBody[],
+  totalPages: number,
+  initialPageIndex = 0
+) => {
   const pageHistory = useRef<PageHistory>({});
   const bookCompleted = useRef(false);
 
@@ -105,11 +108,11 @@ const useTypingAction = (body: BookBody[], initialPageIndex = 0) => {
         updateCursorAndPage(false);
         break;
       case "Enter":
-        updateRenderableEntryState("ENTER");
+        updateRenderableEntryState("↵");
         updateCursorAndPage(true);
         break;
       case "Tab":
-        updateRenderableEntryState("TAB");
+        updateRenderableEntryState("↹");
         updateCursorAndPage(true);
         break;
       default:
@@ -215,17 +218,17 @@ const useTypingAction = (body: BookBody[], initialPageIndex = 0) => {
         }));
         break;
       default:
-        console.log("Invalise Flip case");
+        console.log("Invalid Flip case");
     }
   };
 
   const getFlipInstruction = (nextCursorIndex: number): Flip => {
-    const [pIndex, cIndex] = parseIndex(page.cursorIndex);
+    const [pIndex, _] = parseIndex(page.cursorIndex);
     const currParagraph = page.paragraphs[pIndex];
 
     if (nextCursorIndex >= currParagraph.totalEntries) {
       if (currParagraph.paragraphIndex + 1 >= page.totalParagraphs) {
-        if (page.pageIndex + 1 < totalPages.current) {
+        if (page.pageIndex + 1 < totalPages) {
           return Flip.NextPage;
         } else {
           return Flip.NoNextPage;
@@ -271,6 +274,8 @@ const useTypingAction = (body: BookBody[], initialPageIndex = 0) => {
     bookCompleted,
     getStats,
     pageHistory,
+    updatePageHistory,
+    stats,
   };
 };
 

@@ -1,6 +1,7 @@
 import request from "supertest";
 
 import { app } from "../../app";
+import { Book } from "../../model/book";
 
 it("completes the book when the request is all good", async () => {
   const signInCookie = global.getSignInCookie();
@@ -32,19 +33,8 @@ it("completes the book when the request is all good", async () => {
     .send({})
     .expect(204);
 
-  const book1Req = await request(app)
-    .get(`/api/books/${book1Id}`)
-    .set("Cookie", signInCookie)
-    .send({})
-    .expect(200);
-
-  expect(book1Req.body!.status).toBe("completed");
-
-  const book2Req = await request(app)
-    .get(`/api/books/${book2Id}`)
-    .set("Cookie", signInCookie)
-    .send({})
-    .expect(200);
-
-  expect(book2Req.body!.status).toBe("created");
+  const bk1 = await Book.findById(book1Id);
+  const bk2 = await Book.findById(book2Id);
+  expect(bk1!.status).toBe("completed");
+  expect(bk2!.status).toBe("created");
 });

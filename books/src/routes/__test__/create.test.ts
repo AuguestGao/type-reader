@@ -79,4 +79,42 @@ it("publishes a BookCreated event", async () => {
   expect(natsWrapper.client.publish).toHaveBeenCalled();
 });
 
-it.todo("only allow 3 books for a user");
+it("only allow 3 books for a user", async () => {
+  const signInCookie = global.getSignInCookie();
+
+  await request(app)
+    .post("/api/books")
+    .set("Cookie", signInCookie)
+    .send({
+      title: "1",
+      body: "1",
+    })
+    .expect(201);
+
+  await request(app)
+    .post("/api/books")
+    .set("Cookie", signInCookie)
+    .send({
+      title: "2",
+      body: "2",
+    })
+    .expect(201);
+
+  await request(app)
+    .post("/api/books")
+    .set("Cookie", signInCookie)
+    .send({
+      title: "3",
+      body: "3",
+    })
+    .expect(201);
+
+  await request(app)
+    .post("/api/books")
+    .set("Cookie", signInCookie)
+    .send({
+      title: "4",
+      body: "4",
+    })
+    .expect(400);
+});

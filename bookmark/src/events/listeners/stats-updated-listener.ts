@@ -19,9 +19,13 @@ export class StatsUpdatedListener extends Listener<StatsUpdatedEvent> {
 
     const bookmark = await Bookmark.findOne({ bookId, userId });
 
-    bookmark!.pageIndex = pageIndex;
-    bookmark!.cursorIndex = cursorIndex;
-    bookmark!.totalSecOnBook += readInSec;
+    if (!bookmark) {
+      throw new NotFoundError();
+    }
+
+    bookmark.pageIndex = pageIndex;
+    bookmark.cursorIndex = cursorIndex;
+    bookmark.totalSecOnBook += readInSec;
     if (typeof prevText !== "undefined") {
       bookmark!.prevText = prevText;
     }
