@@ -29,7 +29,9 @@ const Books = ({ books }: { books: IBookInfo[] | [] }) => {
     <Textile>
       <h1>Book shelf</h1>
       {books.length === 0 ? (
-        <p className="text-center text-white">Empty shelf...</p>
+        <p className="text-center text-white">
+          3 book slots left, add your first book now.
+        </p>
       ) : (
         <ul className={styles.bookUl}>
           {books.map((book) => (
@@ -41,13 +43,16 @@ const Books = ({ books }: { books: IBookInfo[] | [] }) => {
           ))}
         </ul>
       )}
-      <div className="mt-4 d-grid gap-2 d-md-flex justify-content-md-center">
-        <Link href="/books/create" passHref>
-          <a className="btn btn-dark" role="button">
-            Add a book
-          </a>
-        </Link>
-      </div>
+
+      {books.length < 3 ? (
+        <div className="mt-4 d-grid gap-2 d-md-flex justify-content-md-center">
+          <Link href="/books/create" passHref>
+            <a className="btn btn-dark" role="button">
+              Add a book
+            </a>
+          </Link>
+        </div>
+      ) : null}
     </Textile>
   );
 };

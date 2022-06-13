@@ -25,11 +25,21 @@ router.get(
       throw new NotAuthorizedError();
     }
 
-    // if (book.status === BookStatus.Created) {
-    //   throw new InternalError("Book is under paging process.");
-    // }
+    let body = book.body;
 
-    res.status(200).send(book);
+    if (book.status === BookStatus.Created) {
+      body = [{ pageIndex: 0, pageContent: [] }];
+    }
+
+    res.status(200).send({
+      meta: {
+        bookId: book._id,
+        title: book.title,
+        author: book.author,
+        totalPages: book.totalPages,
+      },
+      body: body,
+    });
   }
 );
 

@@ -27,7 +27,7 @@ it("returns the book when the request is all good", async () => {
     .send({})
     .expect(200);
 
-  expect(oneBookReq.body!.title).toEqual("2");
+  expect(oneBookReq.body!.meta.title).toBe("2");
 });
 
 it("gets the correct book for the user with the correct bookId", async () => {
@@ -71,7 +71,7 @@ it("gets the correct book for the user with the correct bookId", async () => {
     .send({})
     .expect(200);
 
-  expect(user1Req.body!.title).toEqual("1");
+  expect(user1Req.body!.meta.title).toEqual("1");
 });
 
 it("returns 401 if a user asks for another user's book", async () => {

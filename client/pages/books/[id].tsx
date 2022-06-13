@@ -1,77 +1,264 @@
-import { FormEvent, useEffect } from "react";
+import { useEffect, useState, MouseEvent, ReactNode } from "react";
 import type { GetServerSideProps } from "next";
+import Link from "next/link";
 import { useRouter } from "next/router";
-import { AxiosRequestHeaders } from "axios";
+import { AxiosError, AxiosRequestHeaders, AxiosResponse } from "axios";
 
+import { BookBody } from "@type-reader/common";
 import useRequest from "../../hooks/use-request";
 import buildClient from "../../api/build-client";
 import { useAuth } from "../../context/user-context";
-import { Textile } from "../../components";
+import useTimer from "../../hooks/use-timer";
+import useTypingAction from "../../hooks/use-typing-action";
+import { doRequest } from "../../api/do-request";
+import {
+  Textile,
+  Typable,
+  Entry,
+  DigitalClock,
+  BookStats,
+  Paragraph,
+} from "../../components";
 
 import styles from "../../styles/Book.module.scss";
 
-interface OneBookProps {
-  id: string;
-  title: string;
-  author: string;
+interface BookProps {
+  meta: {
+    bookId: string;
+    title: string;
+    author: string;
+    totalPages: number;
+  };
+  body: BookBody[];
 }
 
-const OneBook = ({ info }: { info: OneBookProps | null }) => {
+interface BookmarkProps {
+  pageIndex: number;
+  cursorIndex: string;
+  totalSecOnBook: number;
+  prevText: string;
+}
+
+const OneBook = ({
+  book,
+  bookmark,
+}: {
+  book: BookProps;
+  bookmark: BookmarkProps;
+}) => {
   const router = useRouter();
   const { currentUser } = useAuth();
 
   useEffect(() => {
-    console.log(info);
     if (!currentUser) {
-      router.push("/books");
-    }
-
-    if (!info) {
-      router.push("/books");
+      router.push("/auth/signin");
     }
   }, [currentUser]);
 
-  const { doRequest, errors } = useRequest({
-    url: `/api/books/${encodeURIComponent(info!.id)}`,
-    method: "delete",
-    body: {},
+  const {
+    meta: { title, author, bookId, totalPages },
+    body,
+  } = book;
 
-    onSuccess: () => {
-      router.push("/books");
-    },
+  const { pageIndex, cursorIndex, totalSecOnBook, prevText } = bookmark;
+
+  const [showTypable, toggleShowTypable] = useState(false);
+  const { startTimer, stopTimer, readInSec } = useTimer();
+
+  const {
+    page,
+    performAction,
+    isReadingPaused,
+    toggleReadingPaused,
+    bookCompleted,
+    pageHistory,
+    stats,
+    updatePageHistory,
+  } = useTypingAction(body, totalPages, pageIndex);
+
+  useEffect(() => {
+    const keyDownHandler = (e: KeyboardEvent) => {
+      e.preventDefault();
+
+      if (!isReadingPaused) {
+        performAction(e.key);
+      }
+    };
+
+    window.addEventListener("keydown", keyDownHandler);
+
+    return () => {
+      window.removeEventListener("keydown", keyDownHandler);
+    };
   });
 
-  const startBook = (e: FormEvent) => {
-    e.preventDefault();
+  useEffect(() => {
+    isReadingPaused ? stopTimer() : startTimer();
+  }, [isReadingPaused]);
 
-    console.log("start reading clicked");
+  useEffect(() => {
+    updatePageHistory();
+
+    const completeTheBook = async () => {
+      await doRequest({
+        url: `/api/books/${encodeURIComponent(bookId)}`,
+        method: "patch",
+        body: {},
+      });
+    };
+
+    completeTheBook();
+  }, [bookCompleted]);
+
+  const [error, setError] = useState<null | ReactNode>(null);
+
+  const startReadingClicked = (e: MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    toggleReadingPaused((prev) => !prev);
+    toggleShowTypable((prev) => !prev);
   };
 
-  const deleteBook = async (e: FormEvent) => {
+  const deleteBookClicked = async (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
 
-    await doRequest();
+    const { errors } = await doRequest({
+      url: `/api/books/${encodeURIComponent(bookId)}`,
+      method: "delete",
+      body: {},
+    });
+
+    if (errors) {
+      setError(errors);
+    } else {
+      router.push("/books");
+    }
+  };
+
+  const addBookmarkClicked = async (e: MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+
+    const { correctEntry, incorrectEntry, fixedEntry } = stats.current;
+    updatePageHistory();
+    console.log(pageHistory);
+
+    const { errors } = await doRequest({
+      url: "/api/stats",
+      method: "patch",
+      body: {
+        bookId,
+        correctEntry,
+        incorrectEntry,
+        fixedEntry,
+        readInSec,
+        pageHistory: pageHistory.current,
+        pageIndex,
+        cursorIndex,
+      },
+    });
+
+    if (errors) {
+      setError(errors);
+    } else {
+      router.push("/statistics/latest");
+    }
   };
 
   return (
     <Textile>
-      <h1>{info!.title}</h1>
-      <address className={styles.author}>Written by {info!.author}</address>
-
-      <div>{errors}</div>
-
-      <div className="d-grid gap-2 col-6 mx-auto">
-        <button type="button" className="btn btn-dark" onClick={startBook}>
-          Start reading
-        </button>
-        <button
-          type="button"
-          className="btn btn-outline-danger"
-          onClick={deleteBook}
-        >
-          Delete this book
-        </button>
+      <div className={styles.aboveTypable}>
+        <h1>{book.meta.title}</h1>
+        {author !== "Unknown" && <p>by {author}</p>}
       </div>
+
+      {<div>{error}</div>}
+
+      {!showTypable ? (
+        <div>
+          <BookStats
+            data={{
+              totalSecOnBook,
+              progress: Math.round(((pageIndex + 1) / totalPages) * 100),
+            }}
+          />
+          <div className="d-grid gap-2 mt-5 col-6 mx-auto">
+            <button
+              type="button"
+              className="btn btn-warning"
+              onClick={startReadingClicked}
+            >
+              Start Reading
+            </button>
+            <button
+              type="button"
+              className="btn btn-dark"
+              onClick={deleteBookClicked}
+            >
+              Delete book
+            </button>
+            <Link href="/books" passHref>
+              <button type="button" className="btn btn-outline-light mt-5">
+                Back to my books
+              </button>
+            </Link>
+          </div>
+        </div>
+      ) : (
+        <div>
+          <Typable>
+            {page.paragraphs.length ? (
+              page.paragraphs.map(({ paragraphIndex, paragraphContent }) => (
+                <Paragraph key={paragraphIndex}>
+                  {paragraphContent.map(({ char, charIndex, state }) => (
+                    <Entry
+                      key={charIndex}
+                      char={char}
+                      state={charIndex === page.cursorIndex ? "current" : state}
+                    />
+                  ))}
+                </Paragraph>
+              ))
+            ) : (
+              <p>We are building your book now, come back to check soon.</p>
+            )}
+          </Typable>
+
+          <div className={styles.belowTypable}>
+            <DigitalClock />
+            <div className="buttons">
+              {isReadingPaused ? (
+                <div
+                  className="btn-group"
+                  role="group"
+                  aria-label="Basic mixed styles example"
+                >
+                  <button
+                    type="button"
+                    className="btn btn-light"
+                    onClick={addBookmarkClicked}
+                  >
+                    Add Bookmark
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-warning"
+                    onClick={() => toggleReadingPaused(false)}
+                  >
+                    Resume Reading
+                  </button>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  className="btn btn-dark"
+                  onClick={() => toggleReadingPaused(true)}
+                >
+                  Pause Reading
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </Textile>
   );
 };
@@ -80,32 +267,26 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const headers = context.req.headers as AxiosRequestHeaders;
   const client = buildClient(headers);
 
-  if (!context.params?.id) {
+  const bookId = context.params!.id as string;
+
+  const bookRes = await client.get(`/api/books/${encodeURIComponent(bookId)}`);
+  const bookmarkRes = await client.get(
+    `/api/bookmark/${encodeURIComponent(bookId)}`
+  );
+
+  if (bookRes.status !== 200 || bookmarkRes.status !== 200) {
     return {
-      props: {
-        info: null,
-      },
+      notFound: true,
     };
   }
 
-  const id = context.params.id as string;
-
-  try {
-    const { data } = await client.get(`/api/books/${encodeURIComponent(id)}`);
-
-    return {
-      props: {
-        info: data as OneBookProps,
-      },
-    };
-  } catch (err) {
-    // ! delete before deploy
-    console.log(err);
-  }
+  const book: BookBody = bookRes.data;
+  const bookmark: BookmarkProps = bookmarkRes.data;
 
   return {
     props: {
-      info: null,
+      book,
+      bookmark,
     },
   };
 };

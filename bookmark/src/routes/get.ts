@@ -12,17 +12,11 @@ import { body } from "express-validator";
 const router = Router();
 
 router.get(
-  "/api/bookmark",
-  body("bookId")
-    .exists()
-    .custom((input: string) => mongoose.Types.ObjectId.isValid(input))
-    .withMessage("Invalid bookId"),
+  "/api/bookmark/:id",
   requireAuth,
   async (req: Request, res: Response) => {
-    const { bookId } = req.body;
-
     const bookmark = await Bookmark.findOne({
-      bookId,
+      bookId: req.params.id,
     });
 
     if (!bookmark) {

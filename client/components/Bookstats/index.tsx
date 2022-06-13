@@ -5,14 +5,14 @@ import { ProgressBar } from "../ProgressBar";
 import styles from "./styles.module.scss";
 
 export const BookStats = ({ data }: { data: IBookStats }) => {
-  const { totalSecsOnBook, progress } = data;
+  const { totalSecOnBook, progress } = data;
 
   return (
     <div className={styles.main}>
       <p>
         You have spent{" "}
         <span className={styles.spentTime}>
-          {getDHMSString(totalSecsOnBook)}{" "}
+          {getDHMSString(totalSecOnBook)}{" "}
         </span>
         on this book.
       </p>

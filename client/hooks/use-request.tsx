@@ -1,3 +1,4 @@
+import { ReactNode } from "react";
 import axios, { AxiosError, AxiosResponse } from "axios";
 
 import { useState } from "react";
@@ -13,7 +14,7 @@ interface RequestProps {
 
 const useRequest = ({ url, method, body, onSuccess }: RequestProps) => {
   //todo - chnage type for errors
-  const [errors, setErrors] = useState<any>(null);
+  const [errors, setErrors] = useState<ReactNode | null>(null);
 
   const doRequest = async () => {
     try {

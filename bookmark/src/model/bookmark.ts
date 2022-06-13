@@ -10,7 +10,7 @@ interface IBookmarkDoc extends mongoose.Document {
   userId: string;
   totalSecOnBook: number;
   pageIndex: number;
-  cursorIndex: number;
+  cursorIndex: string;
   prevText: string;
 }
 
@@ -33,7 +33,7 @@ const bookmarkSchema = new mongoose.Schema(
       required: true,
     },
     cursorIndex: {
-      type: Number,
+      type: String,
       required: true,
     },
     totalSecOnBook: {
@@ -63,7 +63,7 @@ bookmarkSchema.statics.build = (attrs: IBookmarkAttrs) => {
     bookId,
     totalSecOnBook: 0,
     pageIndex: 0,
-    cursorIndex: 0,
+    cursorIndex: "0,0",
     prevText: "null",
   });
 };

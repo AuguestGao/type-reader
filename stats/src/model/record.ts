@@ -74,10 +74,7 @@ const RecordSchema = new mongoose.Schema(
           type: String,
           required: true,
         },
-        pressedKey: {
-          type: String,
-          required: true,
-        },
+        pressedKey: String,
         state: {
           type: String,
           enum: Object.values(EntryState),

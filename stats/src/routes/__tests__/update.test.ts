@@ -39,7 +39,7 @@ it("updates stats right when everything goes well", async () => {
     fixedEntry: 10,
     readInSec: 60,
     pageIndex: 10,
-    cursorIndex: 50,
+    cursorIndex: "0, 50",
   };
 
   await request(app)
