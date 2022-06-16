@@ -7,24 +7,33 @@ import { AxiosRequestHeaders } from "axios";
 import { useAuth } from "../../context/user-context";
 import buildClient from "../../api/build-client";
 import { Textile } from "../../components";
+import { BookStatus } from "@type-reader/common";
 
 import styles from "../../styles/Book.module.scss";
+import { redirectIfNotAuth } from "../../api/redirect-if-not-auth";
 
 interface IBookInfo {
   id: string;
   title: string;
   author: string;
+  status: BookStatus;
 }
 
 const Books = ({ books }: { books: IBookInfo[] | [] }) => {
   const { currentUser } = useAuth();
-
   useEffect(() => {
     if (!currentUser) {
-      Router.push("/");
+      Router.push("/auth/signin");
     }
   }, [currentUser]);
 
+  if (!currentUser) {
+    return (
+      <Textile>
+        <p>Loading...</p>
+      </Textile>
+    );
+  }
   return (
     <Textile>
       <h1>Book shelf</h1>
@@ -37,7 +46,10 @@ const Books = ({ books }: { books: IBookInfo[] | [] }) => {
           {books.map((book) => (
             <li key={book.id}>
               <Link href={`/books/${encodeURIComponent(book.id)}`} passHref>
-                <a>🕮&ensp;{book.title}</a>
+                <a>
+                  {book.status === BookStatus.Completed && "✔️  "}🕮&ensp;
+                  {book.title}
+                </a>
               </Link>
             </li>
           ))}
@@ -61,6 +73,17 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const headers = context.req.headers as AxiosRequestHeaders;
   const client = buildClient(headers);
 
+  const currentUser = await redirectIfNotAuth(client);
+
+  if (!currentUser) {
+    return {
+      redirect: {
+        destination: "/auth/signin",
+        permanent: false,
+      },
+    };
+  }
+
   try {
     const { data } = await client.get("/api/books");
     return {
@@ -69,14 +92,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       },
     };
   } catch (err) {
-    console.log(err);
+    return {
+      notFound: true,
+    };
   }
-
-  return {
-    props: {
-      books: [],
-    },
-  };
 };
 
 export default Books;

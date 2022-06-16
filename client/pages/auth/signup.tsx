@@ -1,10 +1,10 @@
 import type { NextPage } from "next";
 import { useState, useEffect, FormEvent } from "react";
 import Link from "next/link";
-import Router from "next/router";
+import { useRouter } from "next/router";
 
 import useRequest from "../../hooks/use-request";
-import { SignForm, FormInput } from "../../components";
+import { SignForm, FormInput, Textile } from "../../components";
 import { useAuth } from "../../context/user-context";
 
 import styles from "../../styles/Auth.module.scss";
@@ -19,11 +19,13 @@ const SignUp: NextPage = () => {
     answer: "",
   });
 
-  const { currentUser } = useAuth();
+  const { currentUser, setCurrentUser } = useAuth();
+  const router = useRouter();
 
   useEffect(() => {
+    console.log(currentUser);
     if (currentUser) {
-      Router.push("/");
+      router.push("/");
     }
 
     return () =>
@@ -49,8 +51,9 @@ const SignUp: NextPage = () => {
       answer: formInput.answer,
     },
 
-    onSuccess: () => {
-      Router.push("/");
+    onSuccess: (data) => {
+      setCurrentUser!(data);
+      router.push("/");
     },
   });
 
@@ -113,7 +116,7 @@ const SignUp: NextPage = () => {
         onChange={(e) => setFormInput({ ...formInput, answer: e.target.value })}
       />
 
-      <p>{errors}</p>
+      {errors}
       <button type="submit" className="btn btn-primary w-100 mt-4">
         Sign up
       </button>

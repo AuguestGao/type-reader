@@ -1,19 +1,30 @@
-import type { AppProps } from "next/app";
+import type { AppProps, AppContext } from "next/app";
+import { NextPage } from "next";
 
 import { Layout } from "../components";
-import { AuthProvider } from "../context/user-context";
 
 import "bootstrap/dist/css/bootstrap.css";
 import "../styles/globals.scss";
+import buildClient from "../api/build-client";
 
-const MyApp = ({ Component, pageProps }: AppProps) => {
+interface MyAppProps extends AppProps {
+  pathname: string;
+}
+
+const MyApp = ({ Component, pageProps, pathname }: MyAppProps) => {
   return (
-    <AuthProvider>
-      <Layout>
-        <Component {...pageProps} />
-      </Layout>
-    </AuthProvider>
+    <Layout pathname={pathname}>
+      <Component {...pageProps} />
+    </Layout>
   );
+};
+
+MyApp.getInitialProps = async (appContext: AppContext) => {
+  const { pathname } = appContext.ctx;
+
+  return {
+    pathname,
+  };
 };
 
 export default MyApp;

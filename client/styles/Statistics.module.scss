@@ -1,0 +1,31 @@
+.title {
+  color: whitesmoke;
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 2rem auto;
+}
+
+.main > p {
+  color: antiquewhite;
+  font-size: large;
+}
+
+.main > p.date {
+  color: whitesmoke;
+  font-weight: 500;
+  margin: -2rem auto 2rem;
+}
+
+.backBtn {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.backBtn > a {
+  width: 250px;
+}

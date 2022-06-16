@@ -5,20 +5,30 @@ import {
   Paragraph,
   PageHistory,
   BookBody,
+  BookStatus,
 } from "@type-reader/common";
 import { Flip } from "../types";
 import { renderableEntries } from "../utils/renderable-entries";
 import { parseIndex } from "../utils/parse-index";
 
-const useTypingAction = (
-  body: BookBody[],
-  totalPages: number,
-  initialPageIndex = 0
-) => {
+const useTypingAction = ({
+  body,
+  totalPages,
+  pageIndex,
+  cursorIndex,
+  bookInitialStatus,
+}: {
+  body: BookBody[];
+  totalPages: number;
+  pageIndex: number;
+  cursorIndex: string;
+  bookInitialStatus: BookStatus;
+}) => {
   const pageHistory = useRef<PageHistory>({});
-  const bookCompleted = useRef(false);
-
+  const bookStatus = useRef(bookInitialStatus);
   const stats = useRef({ correctEntry: 0, incorrectEntry: 0, fixedEntry: 0 });
+  const [isReadingPaused, toggleReadingPaused] = useState(true);
+
   const updateStats = (state: EntryState, isPlus: Boolean) => {
     let { correctEntry, incorrectEntry, fixedEntry } = stats.current;
 
@@ -39,19 +49,20 @@ const useTypingAction = (
     stats.current = { correctEntry, incorrectEntry, fixedEntry };
   };
 
-  const [isReadingPaused, toggleReadingPaused] = useState(true);
-
   const getHistory = (pageIndex: number) => {
     return pageHistory.current[pageIndex.toString()];
   };
 
-  const getInitPageState = (initialPageIndex: number): Page => {
-    const historyFound = getHistory(initialPageIndex);
+  const getCurrPageState = (
+    pageIndex: number,
+    cursorInitIndex = "0,0"
+  ): Page => {
+    const historyFound = getHistory(pageIndex);
 
     // no history for the page
     if (typeof historyFound === "undefined") {
       const pageContent = body.find(
-        (page) => page.pageIndex === initialPageIndex
+        (page) => page.pageIndex === pageIndex
       )!.pageContent;
 
       const totalParagraphs = pageContent.length;
@@ -80,8 +91,8 @@ const useTypingAction = (
       }
 
       return {
-        pageIndex: initialPageIndex,
-        cursorIndex: "0,0",
+        pageIndex,
+        cursorIndex: cursorInitIndex,
         paragraphs,
         totalParagraphs,
       };
@@ -91,7 +102,7 @@ const useTypingAction = (
     const { cursorIndex, paragraphs, totalParagraphs } = historyFound;
 
     return {
-      pageIndex: initialPageIndex,
+      pageIndex,
       cursorIndex,
       paragraphs,
       totalParagraphs,
@@ -99,7 +110,7 @@ const useTypingAction = (
   };
 
   const [page, setPage] = useState<Page>(() =>
-    getInitPageState(initialPageIndex)
+    getCurrPageState(pageIndex, cursorIndex)
   );
 
   const performAction = (pressedKey: string) => {
@@ -205,8 +216,8 @@ const useTypingAction = (
         updatePageIndex(Flip.PrevPage);
         break;
       case Flip.NoNextPage:
-        bookCompleted.current = true;
         toggleReadingPaused(true);
+        bookStatus.current = BookStatus.Completed;
       case Flip.NoPrevPage:
         updatePageHistory();
         break;
@@ -258,8 +269,8 @@ const useTypingAction = (
   const updatePageIndex = (direction: Flip) => {
     const isForward = direction === Flip.NextPage;
     let nextPageIndex = page.pageIndex;
-    isForward ? (nextPageIndex += 1) : (nextPageIndex -= 1);
-    setPage(getInitPageState(nextPageIndex));
+    isForward ? nextPageIndex++ : nextPageIndex--;
+    setPage(getCurrPageState(nextPageIndex));
   };
 
   const getStats = () => {
@@ -271,7 +282,7 @@ const useTypingAction = (
     performAction,
     isReadingPaused,
     toggleReadingPaused,
-    bookCompleted,
+    bookStatus,
     getStats,
     pageHistory,
     updatePageHistory,

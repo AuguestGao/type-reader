@@ -33,6 +33,7 @@ export const Header = () => {
         ) : (
           <Link href="/auth/signin">Sign In</Link>
         )}
+        <Link href="/auth/signin">Sign In</Link>
       </ul>
     </nav>
   );

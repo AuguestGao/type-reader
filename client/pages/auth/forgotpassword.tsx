@@ -5,7 +5,7 @@ import Router from "next/router";
 
 import useRequest from "../../hooks/use-request";
 import { useAuth } from "../../context/user-context";
-import { FormInput, SignForm } from "../../components";
+import { FormInput, SignForm, Textile } from "../../components";
 
 import styles from "../../styles/Auth.module.scss";
 

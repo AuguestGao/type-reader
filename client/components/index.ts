@@ -13,3 +13,4 @@ export * from "./Stats";
 export * from "./Bookstats";
 export * from "./ProgressBar";
 export * from "./Paragraph";
+export * from "./Footer";

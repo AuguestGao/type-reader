@@ -3,7 +3,6 @@ import {
   NotAuthorizedError,
   NotFoundError,
   requireAuth,
-  InternalError,
   BookStatus,
 } from "@type-reader/common";
 
@@ -37,6 +36,8 @@ router.get(
         title: book.title,
         author: book.author,
         totalPages: book.totalPages,
+        status: book.status,
+        updatedAt: book.updatedAt,
       },
       body: body,
     });

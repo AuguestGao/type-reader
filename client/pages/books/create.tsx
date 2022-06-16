@@ -25,7 +25,7 @@ const CreateBook: NextPage = () => {
 
   useEffect(() => {
     if (!currentUser) {
-      Router.push("/");
+      Router.push("/auth/signin");
     }
 
     return () =>
@@ -60,6 +60,14 @@ const CreateBook: NextPage = () => {
     e.preventDefault();
     Router.push("/books");
   };
+
+  if (!currentUser) {
+    return (
+      <Textile>
+        <p>Loading...</p>
+      </Textile>
+    );
+  }
 
   return (
     <Textile>

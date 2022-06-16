@@ -1,45 +1,33 @@
 import type { GetServerSideProps } from "next";
+import { AxiosRequestHeaders } from "axios";
 import Link from "next/link";
-import { AxiosError, AxiosRequestHeaders } from "axios";
-import moment from "moment";
 
 import buildClient from "../../api/build-client";
 import { Textile } from "../../components";
 import { getDHMSString } from "../../utils/convert-seconds";
-import { IRecordProps } from "../../types";
 
 import styles from "../../styles/Statistics.module.scss";
 import { redirectIfNotAuth } from "../../api/redirect-if-not-auth";
 
-const StatsLatest = ({ record }: { record: IRecordProps }) => {
-  const renderRecord = () => {
-    const { createdAt, accuracy, readInSec, totalEntry, wpm, netWpm, kpm } =
-      record;
-    const parsedTime = moment(createdAt).format("MMM D, YYYY h:mm a");
+interface IStatsProps {
+  totalEntry: number;
+  totalReadInSec: number;
+}
 
-    return (
-      <>
-        <p className={styles.date}>{parsedTime}</p>
-        <p>Total Key Entered: {totalEntry}</p>
-        <p>Time Spent: {getDHMSString(readInSec)}</p>
-        <p>Accuracy: {accuracy}%</p>
-        <p>Speed: {wpm} WPM</p>
-        <p>Net Speed: {netWpm} WPM</p>
-        <p>Key Speed: {kpm} KPM</p>
-      </>
-    );
-  };
+const StatsOverall = ({ stats }: { stats: IStatsProps }) => {
+  // todo delete below
+  const totalEntry = 500000;
+  const totalReadInSec = 15028;
+  // todo end
 
   return (
     <Textile>
-      <h1>The Latest Performance</h1>
+      <h1 className={styles.title}>Total</h1>
       <div className={styles.main}>
-        {Object.keys(record).length === 0 ? (
-          <p>It seems you don&apos;t have any record yet</p>
-        ) : (
-          renderRecord()
-        )}
+        <p>Key Entered: {stats.totalEntry}</p>
+        <p>Time Spent: {getDHMSString(stats.totalReadInSec)}</p>
       </div>
+
       <div className={styles.backBtn}>
         <Link href="/books" passHref>
           <a className="btn btn-primary" role="button" aria-disabled="true">
@@ -67,10 +55,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   }
 
   try {
-    const record = await client.get("/api/stats/latest");
+    const stats = await client.get("/api/stats");
     return {
       props: {
-        record: record.data,
+        stats: stats.data,
       },
     };
   } catch (err) {
@@ -80,4 +68,4 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   }
 };
 
-export default StatsLatest;
+export default StatsOverall;

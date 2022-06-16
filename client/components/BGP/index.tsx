@@ -1,21 +1,21 @@
 import Image from "next/image";
 
-import { colorImageMap } from "../../utils/color-image-map";
+import { backgroundPicture } from "../../utils/bgp-map";
 
 import styles from "./styles.module.scss";
 
-const getImageByColor = (color: string) => {
-  const imageSrc = colorImageMap[color];
+const getImageByColor = (bgpName: string) => {
+  const imageSrc = backgroundPicture[bgpName];
 
   if (!imageSrc) {
-    return colorImageMap["darkgray"];
+    return backgroundPicture["darkgray"];
   }
 
   return imageSrc;
 };
 
-export const BGP = ({ color = "darkgray" }: { color?: string }) => {
-  const image = getImageByColor(color);
+export const BGP = ({ bgpName = "texturedDarkGrayWall" }) => {
+  const image = getImageByColor(bgpName);
   return (
     <div className={styles.bgwrap}>
       <Image
