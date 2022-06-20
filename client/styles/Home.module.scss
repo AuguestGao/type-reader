@@ -1,8 +1,71 @@
-.colored{
-  color: rgb(32, 172, 218);
+.main {
+  grid-area: 1 / 2 / -1 / 3;
+  height: 80%;
+  margin: 5% 0;
+  padding: 4rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: rgba(19, 19, 19, 0.15);
+  backdrop-filter: blur(5px);
+  border-radius: 1rem;
 }
 
-.coloredLink {
-  color: blueviolet;
+.logo {
+  font-family: "Dancing Script", cursive;
+  font-size: 10rem;
+  font-weight: 700;
+  color: white;
+  letter-spacing: 8px;
+}
 
+.logo:hover {
+  color: white;
+  cursor: pointer;
+  text-shadow: 1px 0px 4px rgb(252, 243, 222), 3px 0px 4px rgb(255, 235, 184),
+    2px 0px 3px rgb(248, 248, 226), 2px 3px 15px rgb(248, 248, 226),
+    2px 0px 15px, 5px 0px 125px rgb(248, 248, 226);
+}
+
+.subtitle {
+  color: white;
+  font-family: "Dancing Script", cursive;
+  font-size: 1.5rem;
+  letter-spacing: 5px;
+}
+
+.logo:hover > .flickerSlow {
+  animation: flicker 10s linear infinite;
+}
+
+.logo:hover > .flickerFast {
+  animation: flicker 3s linear infinite;
+}
+
+.buttons {
+  margin: 5rem auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+@keyframes flicker {
+  0%,
+  19.999%,
+  22%,
+  62.999%,
+  64%,
+  64.999%,
+  70%,
+  100% {
+    opacity: 0.99;
+  }
+  20%,
+  21.999%,
+  63%,
+  63.999%,
+  65%,
+  69.999% {
+    opacity: 0.4;
+  }
 }

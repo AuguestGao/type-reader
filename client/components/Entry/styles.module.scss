@@ -7,30 +7,32 @@
 }
 
 .correct {
-  color: green;
+  color: aquamarine;
 }
 
 .incorrect {
-  color: rgb(133, 26, 62);
-  background: rgba(255, 182, 193, 0.2);
+  color: indianred;
 }
 
 .fixed {
-  color: yellow;
+  color: bisque;
 }
 
 .current {
-  background: lightgray;
+  background: rgba(255, 255, 255, 0.9);
+  color: black;
 }
 
 .untyped {
-  color: white;
+  color: ghostwhite;
 }
 
 .twoSpaces {
   padding: 1px 0.5rem;
+  opacity: 0.5;
 }
 
 .fourSpaces {
   padding: 1px 1rem;
+  opacity: 0.5;
 }

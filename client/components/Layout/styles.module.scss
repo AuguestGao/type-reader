@@ -1,4 +1,23 @@
 .main {
-  min-height: 100%;
   width: 100%;
+  display: grid;
+  grid-template-columns: 15% auto 15%;
+  grid-template-rows: 64px 1fr 40px;
+  grid-template-areas:
+    "left header right"
+    "left main right"
+    "footer footer footer";
+}
+
+.header {
+  grid-area: header;
+}
+
+.content {
+  grid-area: main;
+  min-height: calc(100vh - 104px);
+}
+
+.footer {
+  grid-area: footer;
 }

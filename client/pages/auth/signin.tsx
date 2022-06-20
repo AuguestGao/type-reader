@@ -4,7 +4,6 @@ import Link from "next/link";
 import Router from "next/router";
 
 import useRequest from "../../hooks/use-request";
-import { useAuth } from "../../context/user-context";
 import { FormInput, SignForm } from "../../components";
 
 import styles from "../../styles/Auth.module.scss";
@@ -15,19 +14,13 @@ const SignIn: NextPage = () => {
     password: "",
   });
 
-  const { currentUser } = useAuth();
-
   useEffect(() => {
-    if (currentUser) {
-      Router.push("/");
-    }
-
     return () =>
       setFormInput({
         email: "",
         password: "",
       });
-  }, [currentUser]);
+  }, []);
 
   const { doRequest, errors } = useRequest({
     url: "/api/users/signin",
@@ -37,7 +30,7 @@ const SignIn: NextPage = () => {
       password: formInput.password,
     },
 
-    onSuccess: () => {
+    onSuccess: (displayName: string) => {
       Router.push("/");
     },
   });
@@ -49,7 +42,7 @@ const SignIn: NextPage = () => {
   };
 
   return (
-    <SignForm title="sign in" onSubmit={onSubmit}>
+    <SignForm title="Sign in" onSubmit={onSubmit}>
       <FormInput
         type="email"
         label="Email"
@@ -70,14 +63,22 @@ const SignIn: NextPage = () => {
         <Link href="/auth/forgotpassword">Forgot password?</Link>{" "}
       </p>
 
-      <div>{errors}</div>
+      {errors}
 
-      <button type="submit" className="btn btn-primary w-100 mt-4">
-        Sign in
-      </button>
+      <div className="w-100 mt-5 d-flex justify-content-center">
+        <button
+          type="submit"
+          className="btn btn-outline-light rounded-pill px-5 fs-5 fw-bold"
+        >
+          Sign in
+        </button>
+      </div>
 
       <p className={styles.redirect}>
-        Already have an account? <Link href="/auth/signup">Go to Sign Up</Link>{" "}
+        Already have an account?{" "}
+        <Link href="/auth/signup" passHref>
+          <a className={styles.link}>go to Sign Up</a>
+        </Link>{" "}
       </p>
     </SignForm>
   );

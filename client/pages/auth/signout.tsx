@@ -1,10 +1,11 @@
 import { useEffect } from "react";
-import type { NextPage } from "next";
 import Router from "next/router";
+
+import { Textile } from "../../components";
 
 import useRequest from "../../hooks/use-request";
 
-const SignIn: NextPage = () => {
+const SignOut = () => {
   const { doRequest } = useRequest({
     url: "/api/users/signout",
     method: "post",
@@ -19,7 +20,11 @@ const SignIn: NextPage = () => {
     doRequest();
   }, [doRequest]);
 
-  return <div>Signing out</div>;
+  return (
+    <Textile>
+      <h1 className="text-white text-center">Signing out</h1>
+    </Textile>
+  );
 };
 
-export default SignIn;
+export default SignOut;

@@ -1,0 +1,22 @@
+.main {
+  display: flex;
+  color: rgb(131, 131, 131);
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  font-size: 0.9rem;
+}
+
+.link {
+  display: inline-block;
+  background: linear-gradient(to right, darkgray, darkgray),
+    linear-gradient(to right, red, rebeccapurple, royalblue);
+  background-size: 100% 1px, 0 1px;
+  background-position: 100% 100%, 0 100%;
+  background-repeat: no-repeat;
+  transition: background-size 400ms;
+}
+
+.link:hover {
+  background-size: 0 1px, 100% 1px;
+}

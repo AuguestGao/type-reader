@@ -2,20 +2,20 @@ import { useEffect, useState, MouseEvent, ReactNode } from "react";
 import type { GetServerSideProps } from "next";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { AxiosError, AxiosRequestHeaders, AxiosResponse } from "axios";
+import { AxiosRequestHeaders } from "axios";
+import dayjs from "dayjs";
 
-import { BookBody } from "@type-reader/common";
-import useRequest from "../../hooks/use-request";
+import { BookBody, BookStatus } from "@type-reader/common";
 import buildClient from "../../api/build-client";
-import { useAuth } from "../../context/user-context";
 import useTimer from "../../hooks/use-timer";
 import useTypingAction from "../../hooks/use-typing-action";
 import { doRequest } from "../../api/do-request";
+import { getCurrentUser } from "../../api/get-current-user";
+import { useAuth } from "../../context/user-context";
 import {
   Textile,
   Typable,
   Entry,
-  DigitalClock,
   BookStats,
   Paragraph,
 } from "../../components";
@@ -28,6 +28,8 @@ interface BookProps {
     title: string;
     author: string;
     totalPages: number;
+    status: BookStatus;
+    updatedAt: string;
   };
   body: BookBody[];
 }
@@ -42,25 +44,23 @@ interface BookmarkProps {
 const OneBook = ({
   book,
   bookmark,
+  currentUser,
 }: {
   book: BookProps;
   bookmark: BookmarkProps;
+  currentUser: string;
 }) => {
-  const router = useRouter();
-  const { currentUser } = useAuth();
-
+  const { setCurrentUser } = useAuth();
   useEffect(() => {
-    if (!currentUser) {
-      router.push("/auth/signin");
-    }
-  }, [currentUser]);
+    setCurrentUser!(currentUser);
+  }, []);
+
+  const router = useRouter();
 
   const {
-    meta: { title, author, bookId, totalPages },
+    meta: { title, author, bookId, totalPages, status, updatedAt },
     body,
   } = book;
-
-  const { pageIndex, cursorIndex, totalSecOnBook, prevText } = bookmark;
 
   const [showTypable, toggleShowTypable] = useState(false);
   const { startTimer, stopTimer, readInSec } = useTimer();
@@ -70,11 +70,17 @@ const OneBook = ({
     performAction,
     isReadingPaused,
     toggleReadingPaused,
-    bookCompleted,
+    bookStatus,
     pageHistory,
-    stats,
+    getStats,
     updatePageHistory,
-  } = useTypingAction(body, totalPages, pageIndex);
+  } = useTypingAction({
+    body,
+    totalPages,
+    pageIndex: bookmark.pageIndex,
+    cursorIndex: bookmark.cursorIndex,
+    bookInitialStatus: book.meta.status,
+  });
 
   useEffect(() => {
     const keyDownHandler = (e: KeyboardEvent) => {
@@ -92,12 +98,37 @@ const OneBook = ({
     };
   });
 
-  useEffect(() => {
-    isReadingPaused ? stopTimer() : startTimer();
-  }, [isReadingPaused]);
+  const addBookmark = async (url?: string) => {
+    const { correctEntry, incorrectEntry, fixedEntry } = getStats();
+
+    updatePageHistory();
+
+    const { errors } = await doRequest({
+      url: "/api/stats",
+      method: "patch",
+      body: {
+        bookId,
+        correctEntry,
+        incorrectEntry,
+        fixedEntry,
+        readInSec,
+        pageHistory: pageHistory.current,
+        pageIndex: page.pageIndex,
+        cursorIndex: page.cursorIndex,
+      },
+    });
+
+    if (errors) {
+      setError(errors);
+    }
+
+    if (url) {
+      router.push(url);
+    }
+  };
 
   useEffect(() => {
-    updatePageHistory();
+    isReadingPaused ? stopTimer() : startTimer();
 
     const completeTheBook = async () => {
       await doRequest({
@@ -107,8 +138,11 @@ const OneBook = ({
       });
     };
 
-    completeTheBook();
-  }, [bookCompleted]);
+    if (bookStatus.current !== book.meta.status) {
+      completeTheBook();
+      addBookmark("/statistics/latest");
+    }
+  }, [isReadingPaused]);
 
   const [error, setError] = useState<null | ReactNode>(null);
 
@@ -134,74 +168,61 @@ const OneBook = ({
     }
   };
 
-  const addBookmarkClicked = async (e: MouseEvent<HTMLButtonElement>) => {
+  const addBookmarkClicked = (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
 
-    const { correctEntry, incorrectEntry, fixedEntry } = stats.current;
-    updatePageHistory();
-    console.log(pageHistory);
-
-    const { errors } = await doRequest({
-      url: "/api/stats",
-      method: "patch",
-      body: {
-        bookId,
-        correctEntry,
-        incorrectEntry,
-        fixedEntry,
-        readInSec,
-        pageHistory: pageHistory.current,
-        pageIndex,
-        cursorIndex,
-      },
-    });
-
-    if (errors) {
-      setError(errors);
-    } else {
-      router.push("/statistics/latest");
-    }
+    addBookmark("/statistics/latest");
   };
 
   return (
     <Textile>
       <div className={styles.aboveTypable}>
-        <h1>{book.meta.title}</h1>
+        <h1>{title}</h1>
         {author !== "Unknown" && <p>by {author}</p>}
       </div>
 
-      {<div>{error}</div>}
-
       {!showTypable ? (
-        <div>
+        <>
           <BookStats
             data={{
-              totalSecOnBook,
-              progress: Math.round(((pageIndex + 1) / totalPages) * 100),
+              totalSecOnBook: bookmark.totalSecOnBook,
+              progress:
+                book.meta.status === BookStatus.Completed
+                  ? 100
+                  : Math.floor((bookmark.pageIndex / totalPages) * 100),
             }}
-          />
+          >
+            {book.meta.status === BookStatus.Completed ? (
+              <p>Completed on {dayjs(updatedAt).format("MMM D, YYYY")}</p>
+            ) : (
+              ""
+            )}
+          </BookStats>
           <div className="d-grid gap-2 mt-5 col-6 mx-auto">
             <button
               type="button"
-              className="btn btn-warning"
+              className="btn btn-light fw-bold rounded-pill px-5 fs-5"
               onClick={startReadingClicked}
             >
-              Start Reading
+              Start reading
             </button>
             <button
               type="button"
-              className="btn btn-dark"
+              className="btn btn-outline-light fw-bold rounded-pill px-5 fs-5"
               onClick={deleteBookClicked}
             >
               Delete book
             </button>
             <Link href="/books" passHref>
-              <button type="button" className="btn btn-outline-light mt-5">
-                Back to my books
+              <button
+                type="button"
+                className="btn btn-outline-light fw-bold rounded-pill px-5 fs-5 mt-5"
+              >
+                Back to books
               </button>
             </Link>
           </div>
-        </div>
+        </>
       ) : (
         <div>
           <Typable>
@@ -223,42 +244,37 @@ const OneBook = ({
           </Typable>
 
           <div className={styles.belowTypable}>
-            <DigitalClock />
-            <div className="buttons">
-              {isReadingPaused ? (
-                <div
-                  className="btn-group"
-                  role="group"
-                  aria-label="Basic mixed styles example"
-                >
-                  <button
-                    type="button"
-                    className="btn btn-light"
-                    onClick={addBookmarkClicked}
-                  >
-                    Add Bookmark
-                  </button>
-                  <button
-                    type="button"
-                    className="btn btn-warning"
-                    onClick={() => toggleReadingPaused(false)}
-                  >
-                    Resume Reading
-                  </button>
-                </div>
-              ) : (
+            {isReadingPaused ? (
+              <>
                 <button
                   type="button"
-                  className="btn btn-dark"
-                  onClick={() => toggleReadingPaused(true)}
+                  className="btn btn-light fw-bold rounded-pill px-5 fs-5"
+                  onClick={addBookmarkClicked}
                 >
-                  Pause Reading
+                  Add bookmark
                 </button>
-              )}
-            </div>
+                <button
+                  type="button"
+                  className="btn btn-outline-light fw-bold rounded-pill px-5 fs-5"
+                  onClick={() => toggleReadingPaused(false)}
+                >
+                  Resume reading
+                </button>
+              </>
+            ) : (
+              <button
+                type="button"
+                className="btn btn-outline-light fw-bold rounded-pill px-5 fs-5"
+                onClick={() => toggleReadingPaused(true)}
+              >
+                Pause reading
+              </button>
+            )}
           </div>
         </div>
       )}
+
+      {error}
     </Textile>
   );
 };
@@ -267,28 +283,42 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const headers = context.req.headers as AxiosRequestHeaders;
   const client = buildClient(headers);
 
-  const bookId = context.params!.id as string;
+  try {
+    const currentUser = await getCurrentUser(client);
 
-  const bookRes = await client.get(`/api/books/${encodeURIComponent(bookId)}`);
-  const bookmarkRes = await client.get(
-    `/api/bookmark/${encodeURIComponent(bookId)}`
-  );
+    if (!currentUser) {
+      return {
+        redirect: {
+          destination: "/auth/signin",
+          permanent: false,
+        },
+      };
+    }
 
-  if (bookRes.status !== 200 || bookmarkRes.status !== 200) {
+    const bookId = context.params!.id as string;
+
+    const bookRes = await client.get(
+      `/api/books/${encodeURIComponent(bookId)}`
+    );
+    const bookmarkRes = await client.get(
+      `/api/bookmark/${encodeURIComponent(bookId)}`
+    );
+
+    const book: BookProps = bookRes.data;
+    const bookmark: BookmarkProps = bookmarkRes.data;
+
+    return {
+      props: {
+        book,
+        bookmark,
+        currentUser: currentUser.displayName,
+      },
+    };
+  } catch (err) {
     return {
       notFound: true,
     };
   }
-
-  const book: BookBody = bookRes.data;
-  const bookmark: BookmarkProps = bookmarkRes.data;
-
-  return {
-    props: {
-      book,
-      bookmark,
-    },
-  };
 };
 
 export default OneBook;

@@ -1,12 +1,13 @@
 import { useEffect } from "react";
-import Router from "next/router";
 import Link from "next/link";
 import { GetServerSideProps } from "next/types";
 import { AxiosRequestHeaders } from "axios";
 
-import { useAuth } from "../../context/user-context";
 import buildClient from "../../api/build-client";
-import { Textile } from "../../components";
+import { ButtonLink, Textile } from "../../components";
+import { BookStatus } from "@type-reader/common";
+import { getCurrentUser } from "../../api/get-current-user";
+import { useAuth } from "../../context/user-context";
 
 import styles from "../../styles/Book.module.scss";
 
@@ -14,20 +15,24 @@ interface IBookInfo {
   id: string;
   title: string;
   author: string;
+  status: BookStatus;
 }
 
-const Books = ({ books }: { books: IBookInfo[] | [] }) => {
-  const { currentUser } = useAuth();
-
+const Books = ({
+  books,
+  currentUser,
+}: {
+  books: IBookInfo[] | [];
+  currentUser: string;
+}) => {
+  const { setCurrentUser } = useAuth();
   useEffect(() => {
-    if (!currentUser) {
-      Router.push("/");
-    }
-  }, [currentUser]);
+    setCurrentUser!(currentUser);
+  }, []);
 
   return (
     <Textile>
-      <h1>Book shelf</h1>
+      <h1>Bookshelf</h1>
       {books.length === 0 ? (
         <p className="text-center text-white">
           3 book slots left, add your first book now.
@@ -37,7 +42,10 @@ const Books = ({ books }: { books: IBookInfo[] | [] }) => {
           {books.map((book) => (
             <li key={book.id}>
               <Link href={`/books/${encodeURIComponent(book.id)}`} passHref>
-                <a>🕮&ensp;{book.title}</a>
+                <a>
+                  🕮&ensp;{book.title}
+                  {book.status === BookStatus.Completed && " (completed)"}
+                </a>
               </Link>
             </li>
           ))}
@@ -46,11 +54,7 @@ const Books = ({ books }: { books: IBookInfo[] | [] }) => {
 
       {books.length < 3 ? (
         <div className="mt-4 d-grid gap-2 d-md-flex justify-content-md-center">
-          <Link href="/books/create" passHref>
-            <a className="btn btn-dark" role="button">
-              Add a book
-            </a>
-          </Link>
+          <ButtonLink dest="/books/create" label="new Book" isOutlined={true} />
         </div>
       ) : null}
     </Textile>
@@ -62,21 +66,31 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const client = buildClient(headers);
 
   try {
+    const currentUser = await getCurrentUser(client);
+
+    if (!currentUser) {
+      return {
+        redirect: {
+          destination: "/auth/signin",
+          permanent: false,
+        },
+      };
+    }
+
     const { data } = await client.get("/api/books");
+
     return {
       props: {
         books: data,
+        currentUser: currentUser.displayName,
       },
     };
   } catch (err) {
     console.log(err);
+    return {
+      notFound: true,
+    };
   }
-
-  return {
-    props: {
-      books: [],
-    },
-  };
 };
 
 export default Books;

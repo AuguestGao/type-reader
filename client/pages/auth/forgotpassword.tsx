@@ -4,7 +4,6 @@ import Link from "next/link";
 import Router from "next/router";
 
 import useRequest from "../../hooks/use-request";
-import { useAuth } from "../../context/user-context";
 import { FormInput, SignForm } from "../../components";
 
 import styles from "../../styles/Auth.module.scss";
@@ -14,18 +13,12 @@ const ForgotPassword: NextPage = () => {
     email: "",
   });
 
-  const { currentUser } = useAuth();
-
   useEffect(() => {
-    if (currentUser) {
-      Router.push("/");
-    }
-
     return () =>
       setFormInput({
         email: "",
       });
-  }, [currentUser]);
+  }, []);
 
   const { doRequest, errors } = useRequest({
     url: "/api/users/forgotpassword",
@@ -47,7 +40,7 @@ const ForgotPassword: NextPage = () => {
   };
 
   return (
-    <SignForm title="forgot password" onSubmit={onSubmit}>
+    <SignForm title="Forgot password?" onSubmit={onSubmit}>
       <FormInput
         type="email"
         label="Email"
@@ -56,14 +49,22 @@ const ForgotPassword: NextPage = () => {
         onChange={(e) => setFormInput({ ...formInput, email: e.target.value })}
       />
 
-      <p>{errors}</p>
+      {errors}
 
-      <button type="submit" className="btn btn-primary w-100 mt-4">
-        Submit
-      </button>
+      <div className="w-100 mt-5 d-flex justify-content-center">
+        <button
+          type="submit"
+          className="btn btn-outline-light rounded-pill px-5 fs-5 fw-bold"
+        >
+          Submit
+        </button>
+      </div>
 
       <p className={styles.redirect}>
-        Remembered it? <Link href="/auth/signin">Go to Sign In</Link>
+        Now remember it?{" "}
+        <Link href="/auth/signin" passHref>
+          <a className={styles.link}>back to Sign In</a>
+        </Link>
       </p>
     </SignForm>
   );

@@ -1,26 +1,52 @@
 import type { GetServerSideProps } from "next";
-import { useEffect } from "react";
 import { AxiosRequestHeaders } from "axios";
 
-import { useAuth } from "../context/user-context";
 import buildClient from "../api/build-client";
-import { CurrentUser } from "../types";
+import { ButtonLink } from "../components";
+import { useAuth } from "../context/user-context";
 
 import styles from "../styles/Home.module.scss";
+import { getCurrentUser } from "../api/get-current-user";
+import { useEffect } from "react";
 
-const Home = ({ user }: { user: CurrentUser }) => {
-  const { currentUser, setCurrentUser } = useAuth();
-
+const Home = ({ currentUser }: { currentUser: string }) => {
+  const { setCurrentUser } = useAuth();
   useEffect(() => {
-    setCurrentUser(user);
+    setCurrentUser!(currentUser);
   }, []);
 
   return (
-    <>
-      <h1 className={styles.colored}>Type Reader!</h1>{" "}
-      <h2 className={styles.colored}>Make touch typing practices fun!</h2>
-      {currentUser ? <h1>signed in</h1> : <h1>NOT signed in</h1>}
-    </>
+    <div className={styles.main}>
+      <h1 className={styles.logo}>
+        Ty<span className={styles.flickerSlow}>p</span>e Rea
+        <span className={styles.flickerFast}>d</span>er
+      </h1>
+      <p className={styles.subtitle}>
+        Pratise touch typing with your favourite books.
+      </p>
+      <div className={styles.buttons}>
+        {currentUser ? (
+          <>
+            <p className="text-center fs-3 text-white">
+              Welcome back, {currentUser}
+            </p>
+
+            <ButtonLink dest="/books" label="to Books" />
+            <ButtonLink
+              dest="/statistics"
+              label="see Stats"
+              isOutlined={true}
+            />
+          </>
+        ) : (
+          <>
+            <ButtonLink dest="/demo" label="Try Demo" isOutlined={true} />
+            <ButtonLink dest="/auth/signup" label="Register" />
+            <ButtonLink dest="/auth/signin" label="Sign in" isOutlined={true} />
+          </>
+        )}
+      </div>
+    </div>
   );
 };
 
@@ -28,21 +54,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const headers = context.req.headers as AxiosRequestHeaders;
   const client = buildClient(headers);
 
-  try {
-    const { data } = await client.get("/api/users/currentuser");
-    return {
-      props: {
-        user: data.currentUser as CurrentUser,
-      },
-    };
-  } catch (err) {
-    // ! delete before deploy
-    console.log(err);
-  }
+  const currentUser = await getCurrentUser(client);
 
   return {
     props: {
-      user: null,
+      currentUser: !!currentUser ? currentUser.displayName : "",
     },
   };
 };

@@ -9,9 +9,9 @@ type SignFormProps = {
 };
 
 export const SignForm = ({ children, title, onSubmit }: SignFormProps) => (
-  <div className={styles.position}>
+  <div className={styles.main}>
     <form className={styles.form} onSubmit={onSubmit}>
-      <h1>{title.toUpperCase()}</h1>
+      <h1>{title}</h1>
       {children}
     </form>
   </div>

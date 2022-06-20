@@ -9,13 +9,13 @@ export const Entry = ({ char, state }: { char: string; state: string }) => {
       renderChar = "⎵";
       space = "twoSpaces";
       break;
-    case "TAB":
-      renderChar = "↹";
-      space = "fourSpaces";
-      break;
     case "ENTER":
       renderChar = "↵";
       space = "twoSpaces";
+      break;
+    case "TAB":
+      renderChar = "↹";
+      space = "fourSpaces";
       break;
     default:
       renderChar = char;
@@ -24,7 +24,7 @@ export const Entry = ({ char, state }: { char: string; state: string }) => {
 
   return (
     <span
-      className={`${styles[state]} ${styles.main} ${space && styles[space]}`}
+      className={`${styles[state]} ${styles.main} ${!!space && styles[space]}`}
     >
       {renderChar}
     </span>

@@ -12,6 +12,7 @@
 .bookUl {
   list-style: none;
   margin: 1rem 0.75rem;
+  width: 100%;
 }
 
 .bookUl > li {
@@ -22,7 +23,7 @@
 }
 
 .bookUl > li > a {
-  font-size: 1.25rem;
+  font-size: 1.5rem;
   margin-top: 0.25rem;
   padding-left: 0.25rem;
   transition: all 0.5s ease-in-out;
@@ -44,9 +45,7 @@
   width: 100%;
   display: flex;
   flex-wrap: nowrap;
-  justify-content: space-between;
-
-  &.buttons {
-    background: red;
-  }
+  justify-content: center;
+  margin-top: 1.5rem;
+  gap: 2rem;
 }
