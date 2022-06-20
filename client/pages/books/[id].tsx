@@ -3,19 +3,19 @@ import type { GetServerSideProps } from "next";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { AxiosRequestHeaders } from "axios";
-import moment from "moment";
+import dayjs from "dayjs";
 
 import { BookBody, BookStatus } from "@type-reader/common";
 import buildClient from "../../api/build-client";
 import useTimer from "../../hooks/use-timer";
 import useTypingAction from "../../hooks/use-typing-action";
 import { doRequest } from "../../api/do-request";
-import { redirectIfNotAuth } from "../../api/redirect-if-not-auth";
+import { getCurrentUser } from "../../api/get-current-user";
+import { useAuth } from "../../context/user-context";
 import {
   Textile,
   Typable,
   Entry,
-  DigitalClock,
   BookStats,
   Paragraph,
 } from "../../components";
@@ -44,10 +44,17 @@ interface BookmarkProps {
 const OneBook = ({
   book,
   bookmark,
+  currentUser,
 }: {
   book: BookProps;
   bookmark: BookmarkProps;
+  currentUser: string;
 }) => {
+  const { setCurrentUser } = useAuth();
+  useEffect(() => {
+    setCurrentUser!(currentUser);
+  }, []);
+
   const router = useRouter();
 
   const {
@@ -65,7 +72,7 @@ const OneBook = ({
     toggleReadingPaused,
     bookStatus,
     pageHistory,
-    stats,
+    getStats,
     updatePageHistory,
   } = useTypingAction({
     body,
@@ -92,7 +99,7 @@ const OneBook = ({
   });
 
   const addBookmark = async (url?: string) => {
-    const { correctEntry, incorrectEntry, fixedEntry } = stats.current;
+    const { correctEntry, incorrectEntry, fixedEntry } = getStats();
 
     updatePageHistory();
 
@@ -122,6 +129,7 @@ const OneBook = ({
 
   useEffect(() => {
     isReadingPaused ? stopTimer() : startTimer();
+
     const completeTheBook = async () => {
       await doRequest({
         url: `/api/books/${encodeURIComponent(bookId)}`,
@@ -131,8 +139,8 @@ const OneBook = ({
     };
 
     if (bookStatus.current !== book.meta.status) {
-      addBookmark();
       completeTheBook();
+      addBookmark("/statistics/latest");
     }
   }, [isReadingPaused]);
 
@@ -185,7 +193,7 @@ const OneBook = ({
             }}
           >
             {book.meta.status === BookStatus.Completed ? (
-              <p>Completed on {moment(updatedAt).format("MMM D, YYYY")}</p>
+              <p>Completed on {dayjs(updatedAt).format("MMM D, YYYY")}</p>
             ) : (
               ""
             )}
@@ -193,21 +201,24 @@ const OneBook = ({
           <div className="d-grid gap-2 mt-5 col-6 mx-auto">
             <button
               type="button"
-              className="btn btn-warning"
+              className="btn btn-light fw-bold rounded-pill px-5 fs-5"
               onClick={startReadingClicked}
             >
-              Start Reading
+              Start reading
             </button>
             <button
               type="button"
-              className="btn btn-dark"
+              className="btn btn-outline-light fw-bold rounded-pill px-5 fs-5"
               onClick={deleteBookClicked}
             >
               Delete book
             </button>
             <Link href="/books" passHref>
-              <button type="button" className="btn btn-outline-light mt-5">
-                Back to my books
+              <button
+                type="button"
+                className="btn btn-outline-light fw-bold rounded-pill px-5 fs-5 mt-5"
+              >
+                Back to books
               </button>
             </Link>
           </div>
@@ -233,44 +244,37 @@ const OneBook = ({
           </Typable>
 
           <div className={styles.belowTypable}>
-            <DigitalClock />
-            <div className="buttons">
-              {isReadingPaused ? (
-                <div
-                  className="btn-group"
-                  role="group"
-                  aria-label="Basic mixed styles example"
-                >
-                  <button
-                    type="button"
-                    className="btn btn-light"
-                    onClick={addBookmarkClicked}
-                  >
-                    Add Bookmark
-                  </button>
-                  <button
-                    type="button"
-                    className="btn btn-warning"
-                    onClick={() => toggleReadingPaused(false)}
-                  >
-                    Resume Reading
-                  </button>
-                </div>
-              ) : (
+            {isReadingPaused ? (
+              <>
                 <button
                   type="button"
-                  className="btn btn-dark"
-                  onClick={() => toggleReadingPaused(true)}
+                  className="btn btn-light fw-bold rounded-pill px-5 fs-5"
+                  onClick={addBookmarkClicked}
                 >
-                  Pause Reading
+                  Add bookmark
                 </button>
-              )}
-            </div>
+                <button
+                  type="button"
+                  className="btn btn-outline-light fw-bold rounded-pill px-5 fs-5"
+                  onClick={() => toggleReadingPaused(false)}
+                >
+                  Resume reading
+                </button>
+              </>
+            ) : (
+              <button
+                type="button"
+                className="btn btn-outline-light fw-bold rounded-pill px-5 fs-5"
+                onClick={() => toggleReadingPaused(true)}
+              >
+                Pause reading
+              </button>
+            )}
           </div>
         </div>
       )}
 
-      {<div>{error}</div>}
+      {error}
     </Textile>
   );
 };
@@ -279,20 +283,20 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const headers = context.req.headers as AxiosRequestHeaders;
   const client = buildClient(headers);
 
-  const currentUser = await redirectIfNotAuth(client);
-
-  if (!currentUser) {
-    return {
-      redirect: {
-        destination: "/auth/signin",
-        permanent: false,
-      },
-    };
-  }
-
-  const bookId = context.params!.id as string;
-
   try {
+    const currentUser = await getCurrentUser(client);
+
+    if (!currentUser) {
+      return {
+        redirect: {
+          destination: "/auth/signin",
+          permanent: false,
+        },
+      };
+    }
+
+    const bookId = context.params!.id as string;
+
     const bookRes = await client.get(
       `/api/books/${encodeURIComponent(bookId)}`
     );
@@ -307,6 +311,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       props: {
         book,
         bookmark,
+        currentUser: currentUser.displayName,
       },
     };
   } catch (err) {

@@ -1,13 +1,13 @@
 import axios, { AxiosRequestHeaders } from "axios";
 import { NextPageContext } from "next";
 
-const buildClient = (ctx: NextPageContext) => {
+const buildClient = (headers: AxiosRequestHeaders) => {
   if (typeof window === "undefined") {
     // server request
     return axios.create({
       baseURL:
         "http://ingress-nginx-controller.ingress-nginx.svc.cluster.local",
-      headers: ctx.req!.headers as AxiosRequestHeaders,
+      headers,
     });
   } else {
     // client request

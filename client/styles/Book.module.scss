@@ -45,10 +45,7 @@
   width: 100%;
   display: flex;
   flex-wrap: nowrap;
-  justify-content: space-between;
+  justify-content: center;
   margin-top: 1.5rem;
-
-  &.buttons {
-    background: red;
-  }
+  gap: 2rem;
 }

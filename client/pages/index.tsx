@@ -1,54 +1,66 @@
 import type { GetServerSideProps } from "next";
-import { useEffect } from "react";
 import { AxiosRequestHeaders } from "axios";
-import Cookies from "js-cookie";
 
-import { useAuth } from "../context/user-context";
 import buildClient from "../api/build-client";
-import bgSource from "../public/images/henry-be--Pg63JThyCg-unsplash.jpg";
-import { BGP } from "../components";
+import { ButtonLink } from "../components";
+import { useAuth } from "../context/user-context";
 
 import styles from "../styles/Home.module.scss";
+import { getCurrentUser } from "../api/get-current-user";
+import { useEffect } from "react";
 
-const Home = ({ user }: { user: string }) => {
-  // const { currentUser, setCurrentUser } = useAuth();
-
-  // useEffect(() => {
-  //   setCurrentUser!(user);
-  // });
+const Home = ({ currentUser }: { currentUser: string }) => {
+  const { setCurrentUser } = useAuth();
+  useEffect(() => {
+    setCurrentUser!(currentUser);
+  }, []);
 
   return (
     <div className={styles.main}>
-      <h1 className={styles.colored}>Type Reader!</h1>{" "}
-      <h2 className={styles.colored}>Make touch typing practices fun!</h2>
-      {/* {currentUser ? <h1>signed in</h1> : <h1>NOT signed in</h1>} */}
-      {/* <BGP color="home" /> */}
+      <h1 className={styles.logo}>
+        Ty<span className={styles.flickerSlow}>p</span>e Rea
+        <span className={styles.flickerFast}>d</span>er
+      </h1>
+      <p className={styles.subtitle}>
+        Pratise touch typing with your favourite books.
+      </p>
+      <div className={styles.buttons}>
+        {currentUser ? (
+          <>
+            <p className="text-center fs-3 text-white">
+              Welcome back, {currentUser}
+            </p>
+
+            <ButtonLink dest="/books" label="to Books" />
+            <ButtonLink
+              dest="/statistics"
+              label="see Stats"
+              isOutlined={true}
+            />
+          </>
+        ) : (
+          <>
+            <ButtonLink dest="/demo" label="Try Demo" isOutlined={true} />
+            <ButtonLink dest="/auth/signup" label="Register" />
+            <ButtonLink dest="/auth/signin" label="Sign in" isOutlined={true} />
+          </>
+        )}
+      </div>
     </div>
   );
 };
 
-// export const getServerSideProps: GetServerSideProps = async (context) => {
-//   const headers = context.req.headers as AxiosRequestHeaders;
-//   const client = buildClient(headers);
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const headers = context.req.headers as AxiosRequestHeaders;
+  const client = buildClient(headers);
 
-//   try {
-//     const { data } = await client.get("/api/users/currentuser");
+  const currentUser = await getCurrentUser(client);
 
-//     return {
-//       props: {
-//         user: data.currentUser?.displayName as string,
-//       },
-//     };
-//   } catch (err) {
-//     // ! delete before deploy
-//     console.log(err);
-
-//     return {
-//       props: {
-//         user: "",
-//       },
-//     };
-//   }
-// };
+  return {
+    props: {
+      currentUser: !!currentUser ? currentUser.displayName : "",
+    },
+  };
+};
 
 export default Home;

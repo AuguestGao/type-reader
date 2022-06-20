@@ -1,22 +1,34 @@
-.navWrap {
-  grid-area: "header";
-  padding: 1rem;
+.main {
+  width: 100%;
+  grid-area: header;
+  padding: 1rem 5rem;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  align-items: center;
-  font-size: 1.5rem;
-  border-bottom: 1px solid darkslateblue;
+  align-items: baseline;
 }
 
 .logo {
+  font-size: 1.75rem;
+  font-family: "Dancing Script", cursive;
   color: white;
-  animation: glow 5s ease-in-out infinite alternate;
+  cursor: pointer;
+  text-shadow: 1px 0px 4px rgb(252, 243, 222), 3px 0px 4px rgb(255, 235, 184),
+    2px 0px 3px rgb(248, 248, 226), 2px 3px 15px rgb(248, 248, 226);
+}
+
+.logo:hover .flickerSlow {
+  animation: flicker 10s linear infinite;
+}
+
+.logo:hover .flickerFast {
+  animation: flicker 3s linear infinite;
 }
 
 .link {
   color: white;
   transition: color 0.2s ease-in-out;
+  font-size: 1.3rem;
 }
 
 .link:not(:last-of-type) {
@@ -27,14 +39,23 @@
   color: wheat;
 }
 
-@keyframes glow {
-  from {
-    text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px #e60073, 0 0 20px #e60073,
-      0 0 30px #e60073, 0 0 40px #e60073;
+@keyframes flicker {
+  0%,
+  19.999%,
+  22%,
+  62.999%,
+  64%,
+  64.999%,
+  70%,
+  100% {
+    opacity: 0.99;
   }
-
-  to {
-    text-shadow: 0 0 50px #fff, 0 0 10px #ff4da6, 0 0 15px #ff4da6,
-      0 0 20px #ff4da6, 0 0 30px #ff4da6, 0 0 40px #ff4da6;
+  20%,
+  21.999%,
+  63%,
+  63.999%,
+  65%,
+  69.999% {
+    opacity: 0.4;
   }
 }

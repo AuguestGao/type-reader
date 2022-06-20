@@ -4,8 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 
 import useRequest from "../../hooks/use-request";
-import { SignForm, FormInput, Textile } from "../../components";
-import { useAuth } from "../../context/user-context";
+import { SignForm, FormInput } from "../../components";
 
 import styles from "../../styles/Auth.module.scss";
 
@@ -19,15 +18,9 @@ const SignUp: NextPage = () => {
     answer: "",
   });
 
-  const { currentUser, setCurrentUser } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    console.log(currentUser);
-    if (currentUser) {
-      router.push("/");
-    }
-
     return () =>
       setFormInput({
         displayName: "",
@@ -37,7 +30,7 @@ const SignUp: NextPage = () => {
         question: "",
         answer: "",
       });
-  }, [currentUser]);
+  }, []);
 
   const { doRequest, errors } = useRequest({
     url: "/api/users/signup",
@@ -52,7 +45,6 @@ const SignUp: NextPage = () => {
     },
 
     onSuccess: (data) => {
-      setCurrentUser!(data);
       router.push("/");
     },
   });
@@ -64,7 +56,7 @@ const SignUp: NextPage = () => {
   };
 
   return (
-    <SignForm title="sign up" onSubmit={onSubmit}>
+    <SignForm title="Sign up" onSubmit={onSubmit}>
       <FormInput
         type="text"
         label="Display Name"
@@ -117,12 +109,21 @@ const SignUp: NextPage = () => {
       />
 
       {errors}
-      <button type="submit" className="btn btn-primary w-100 mt-4">
-        Sign up
-      </button>
+
+      <div className="w-100 mt-5 d-flex justify-content-center">
+        <button
+          type="submit"
+          className="btn btn-outline-light rounded-pill px-5 fs-5 fw-bold"
+        >
+          Sign up
+        </button>
+      </div>
 
       <p className={styles.redirect}>
-        Already have an account? <Link href="/auth/signin">Go to Sign In</Link>{" "}
+        Already have an account?{" "}
+        <Link href="/auth/signin" passHref>
+          <a className={styles.link}>go to Sign In</a>
+        </Link>{" "}
       </p>
     </SignForm>
   );

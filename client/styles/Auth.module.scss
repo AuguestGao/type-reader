@@ -1,9 +1,9 @@
 .forgotPassword {
-color: white;
+  color: white;
 }
 
 .redirect {
-  color:white;
+  color: white;
   width: 100%;
   text-align: center;
   margin-top: 2rem;
@@ -11,8 +11,12 @@ color: white;
 
 .question {
   color: white;
-  width:100%;
+  width: 100%;
   font-size: larger;
   text-align: center;
   margin-bottom: 1rem;
+}
+
+.link:hover {
+  color: wheat;
 }

@@ -1,10 +1,24 @@
-.center {
-  display:flex;
+.main {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
-  height:100vh;
+  margin: auto;
 }
 
 .title {
-  color: pink;
+  font-family: "Dancing Script", cursive;
+  color: white;
+  font-size: 10rem;
+}
+
+.subtitle {
+  font-family: "Dancing Script", cursive;
+  color: white;
+  font-size: 1.5rem;
+}
+
+.main button {
+  margin-top: 10rem;
 }

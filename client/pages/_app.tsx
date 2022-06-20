@@ -1,30 +1,35 @@
-import type { AppProps, AppContext } from "next/app";
-import { NextPage } from "next";
-
-import { Layout } from "../components";
+import type { AppProps } from "next/app";
+import { BGP, Layout } from "../components";
+import { useRouter } from "next/router";
 
 import "bootstrap/dist/css/bootstrap.css";
-import "../styles/globals.scss";
 import buildClient from "../api/build-client";
+import "../styles/globals.scss";
+import { AuthProvider } from "../context/user-context";
 
-interface MyAppProps extends AppProps {
-  pathname: string;
-}
+const MyApp = ({ Component, pageProps }: AppProps) => {
+  const router = useRouter();
 
-const MyApp = ({ Component, pageProps, pathname }: MyAppProps) => {
   return (
-    <Layout pathname={pathname}>
-      <Component {...pageProps} />
-    </Layout>
+    <AuthProvider>
+      <Layout pathname={router.pathname}>
+        <Component {...pageProps} />
+      </Layout>
+    </AuthProvider>
   );
 };
 
-MyApp.getInitialProps = async (appContext: AppContext) => {
-  const { pathname } = appContext.ctx;
+// MyApp.getInitialProps = async (appContext: AppContext) => {
+//   const { ctx, Component } = appContext
 
-  return {
-    pathname,
-  };
-};
+//   const client = buildClient(ctx)
+//   const { data } = await client.get('/api/users/currentuser');
+
+//   if (Component.getServerSideProps)
+
+//   return {
+//     pathname: ctx.pathname,
+//   };
+// };
 
 export default MyApp;

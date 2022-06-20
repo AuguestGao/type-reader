@@ -2,12 +2,17 @@ import styles from "./styles.module.scss";
 
 export const Footer = () => {
   return (
-    <p className={styles.main}>
-      An app by{" "}
-      <address role="author" className={styles.author}>
+    <footer className={styles.main}>
+      An app by&nbsp;
+      <a
+        className={styles.link}
+        href="https://notaugust.com/"
+        target="_blank"
+        rel="noreferrer"
+      >
         Auguest Gao
-      </address>{" "}
-      Ⓒ {new Date().getFullYear().toString()}
-    </p>
+      </a>
+      &nbsp;Ⓒ {new Date().getFullYear().toString()}
+    </footer>
   );
 };

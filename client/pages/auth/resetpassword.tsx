@@ -4,8 +4,7 @@ import Link from "next/link";
 import Router from "next/router";
 
 import useRequest from "../../hooks/use-request";
-import { useAuth } from "../../context/user-context";
-import { FormInput, SignForm, Textile } from "../../components";
+import { FormInput, SignForm } from "../../components";
 
 import styles from "../../styles/Auth.module.scss";
 
@@ -18,14 +17,8 @@ const ResetPassword: NextPage = () => {
 
   const [question, setQuestion] = useState<string | null>(null);
 
-  const { currentUser } = useAuth();
-
   useEffect(() => {
     setQuestion(localStorage.getItem("question"));
-
-    if (!question || currentUser) {
-      Router.push("/");
-    }
 
     return () => {
       setFormInput({
@@ -34,7 +27,7 @@ const ResetPassword: NextPage = () => {
         confirmNewPassword: "",
       });
     };
-  }, [currentUser]);
+  }, []);
 
   const { doRequest, errors } = useRequest({
     url: "/api/users/resetpassword",
@@ -58,7 +51,7 @@ const ResetPassword: NextPage = () => {
   };
 
   return (
-    <SignForm title="reset password" onSubmit={onSubmit}>
+    <SignForm title="Reset password" onSubmit={onSubmit}>
       <div className={styles.question}>Question: {question}</div>
       <FormInput
         type="text"
@@ -86,14 +79,19 @@ const ResetPassword: NextPage = () => {
         }
       />
 
-      <p>{errors}</p>
+      {errors}
 
-      <button type="submit" className="btn btn-primary w-100 mt-4">
-        Submit
-      </button>
+      <div className="w-100 mt-5 d-flex justify-content-center">
+        <button
+          type="submit"
+          className="btn btn-outline-light rounded-pill px-5 fs-5 fw-bold"
+        >
+          Submit
+        </button>
+      </div>
 
       <p className={styles.redirect}>
-        <Link href="/auth/signin">Back to Sign In</Link>
+        <Link href="/auth/signin">back to Sign In</Link>
       </p>
     </SignForm>
   );

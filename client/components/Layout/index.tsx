@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import Head from "next/head";
 
 import { BGP, Header, Footer } from "../";
@@ -23,10 +23,12 @@ export const Layout = ({ children, pathname, subtitle = "" }: LayoutProps) => {
       </Head>
       <BGP bgpName={isHome ? "home" : "texturedDarkGrayWall"} />
 
-      {!isHome && (
+      {!isHome ? (
         <div className={styles.header}>
           <Header />
         </div>
+      ) : (
+        ""
       )}
 
       <div className={styles.content}>{children}</div>
