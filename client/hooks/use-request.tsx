@@ -13,7 +13,6 @@ interface RequestProps {
 }
 
 const useRequest = ({ url, method, body, onSuccess }: RequestProps) => {
-  //todo - chnage type for errors
   const [errors, setErrors] = useState<ReactNode | null>(null);
 
   const doRequest = async () => {
