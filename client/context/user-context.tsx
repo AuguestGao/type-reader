@@ -1,5 +1,4 @@
 import { createContext, useState, ReactNode, useContext } from "react";
-import { CurrentUser } from "../types";
 
 interface AuthContext {
   currentUser: string;

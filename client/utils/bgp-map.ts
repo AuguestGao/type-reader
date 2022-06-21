@@ -1,5 +1,3 @@
-// choose background image by supply a color name
-
 interface BackgroundPictureMap {
   [key: string]: {
     src: string;
