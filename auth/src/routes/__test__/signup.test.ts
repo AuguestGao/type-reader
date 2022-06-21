@@ -14,7 +14,7 @@ it("returns a 400 with invalid display name", async () => {
       question: "question",
       answer: "answer",
     })
-    .expect(400);
+    .expect(200);
 
   // empty displayname after trimming
   await request(app)
