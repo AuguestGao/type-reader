@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { ButtonLink } from "../components";
 
 import styles from "../styles/404.module.scss";

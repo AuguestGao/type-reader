@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode } from "react";
 import Head from "next/head";
 
 import { BGP, Header, Footer } from "../";
