@@ -1,7 +1,9 @@
 name: tests-books
 
 on: 
-  pull_request
+  pull_request:
+    paths:
+      - 'books/**'
 
 jobs:
   build:

@@ -1,7 +1,9 @@
 name: tests-bookmark
 
 on: 
-  pull_request
+  pull_request:
+    paths:
+      - 'bookmark/**'
 
 jobs:
   build:

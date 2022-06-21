@@ -1,7 +1,9 @@
 name: tests-stats
 
 on: 
-  pull_request
+  pull_request:
+    paths:
+      - 'stats/**'
 
 jobs:
   build:
