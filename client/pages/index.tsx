@@ -17,10 +17,10 @@ const Home = ({ currentUser }: { currentUser: string }) => {
 
   return (
     <div className={styles.main}>
-      <h2 className={styles.logo}>
+      <h1 className={styles.logo}>
         Ty<span className={styles.flickerSlow}>p</span>e Rea
         <span className={styles.flickerFast}>d</span>er
-      </h2>
+      </h1>
       <p className={styles.subtitle}>
         Pratise touch typing with your favourite books.
       </p>
