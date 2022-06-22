@@ -7,6 +7,7 @@ import { BookDeletedListener } from "./events/listeners/book-deleted-listener";
 import { StatsUpdatedListener } from "./events/listeners/stats-updated-listener";
 
 const start = async () => {
+  console.log("starting up...");
   if (!process.env.NATS_CLUSTER_ID) {
     throw new Error("NATS_CLUSTER_ID must be defined.");
   }
