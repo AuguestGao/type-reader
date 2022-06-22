@@ -18,10 +18,11 @@ app.use(json({ limit: "1mb" }));
 app.use(
   cookieSession({
     signed: false,
-    secure: process.env.NODE_ENV !== "test", // only send cookies via https
+    // secure: process.env.NODE_ENV !== "test",
+    secure: false,
   })
 );
-app.use(currentUser); //inject currentUser in req.currentUser
+app.use(currentUser);
 
 app.use(createBookRouter);
 app.use(seeOneBookRouter);
