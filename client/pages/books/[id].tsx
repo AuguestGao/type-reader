@@ -63,7 +63,7 @@ const OneBook = ({
   } = book;
 
   const [showTypable, toggleShowTypable] = useState(false);
-  const { startTimer, stopTimer, readInSec } = useTimer();
+  const { startTimer, stopTimer, getTimerReading } = useTimer();
 
   const {
     page,
@@ -79,7 +79,7 @@ const OneBook = ({
     totalPages,
     pageIndex: bookmark.pageIndex,
     cursorIndex: bookmark.cursorIndex,
-    bookInitialStatus: book.meta.status,
+    bookInitialStatus: status,
   });
 
   useEffect(() => {
@@ -100,9 +100,7 @@ const OneBook = ({
 
   const addBookmark = async (url?: string) => {
     const { correctEntry, incorrectEntry, fixedEntry } = getStats();
-
     updatePageHistory();
-
     const { errors } = await doRequest({
       url: "/api/stats",
       method: "patch",
@@ -111,7 +109,7 @@ const OneBook = ({
         correctEntry,
         incorrectEntry,
         fixedEntry,
-        readInSec,
+        readInSec: getTimerReading(),
         pageHistory: pageHistory.current,
         pageIndex: page.pageIndex,
         cursorIndex: page.cursorIndex,
@@ -128,19 +126,23 @@ const OneBook = ({
   };
 
   useEffect(() => {
-    isReadingPaused ? stopTimer() : startTimer();
+    if (isReadingPaused) {
+      stopTimer();
 
-    const completeTheBook = async () => {
-      await doRequest({
-        url: `/api/books/${encodeURIComponent(bookId)}`,
-        method: "patch",
-        body: {},
-      });
-    };
+      const completeTheBook = async () => {
+        await doRequest({
+          url: `/api/books/${encodeURIComponent(bookId)}`,
+          method: "patch",
+          body: {},
+        });
+      };
 
-    if (bookStatus.current !== book.meta.status) {
-      completeTheBook();
-      addBookmark("/statistics/latest");
+      if (bookStatus.current !== status) {
+        completeTheBook();
+        addBookmark("/statistics/latest");
+      }
+    } else {
+      startTimer();
     }
   }, [isReadingPaused]);
 
@@ -239,7 +241,9 @@ const OneBook = ({
                 </Paragraph>
               ))
             ) : (
-              <p className='text-white text-center'>We are building your book now, come back to check soon.</p>
+              <p className="text-white text-center">
+                We are building your book now, come back to check soon.
+              </p>
             )}
           </Typable>
 

@@ -1,24 +1,28 @@
-import { useState } from "react";
+import { useRef } from "react";
 
 const useTimer = () => {
-  const [readInSec, setReadInSec] = useState(0);
-  const [startTime, setStartTime] = useState(new Date());
+  const readInSec = useRef(0);
+  const startTime = useRef(new Date());
 
   const startTimer = () => {
-    setStartTime(new Date());
+    startTime.current = new Date();
   };
 
   const stopTimer = () => {
-    const msecDiff = new Date().getTime() - startTime.getTime();
+    const msecDiff = new Date().getTime() - startTime.current.getTime();
     const secDiff = Math.round(msecDiff / 1000);
-    setReadInSec(readInSec + secDiff);
+    readInSec.current += secDiff;
   };
 
   const clearTimer = () => {
-    setReadInSec(0);
+    readInSec.current = 0;
   };
 
-  return { startTimer, stopTimer, clearTimer, readInSec };
+  const getTimerReading = () => {
+    return readInSec.current;
+  };
+
+  return { startTimer, stopTimer, clearTimer, getTimerReading };
 };
 
 export default useTimer;
