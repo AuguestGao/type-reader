@@ -239,7 +239,7 @@ const OneBook = ({
                 </Paragraph>
               ))
             ) : (
-              <p>We are building your book now, come back to check soon.</p>
+              <p className='text-white text-center'>We are building your book now, come back to check soon.</p>
             )}
           </Typable>
 
