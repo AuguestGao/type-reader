@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import { BookStatus } from "@type-reader/common";
 import { demoBook } from "../utils/demo-book";
@@ -21,7 +21,9 @@ const Demo = () => {
     body,
   } = demoBook;
 
-  const { startTimer, stopTimer, readInSec } = useTimer();
+  const { startTimer, stopTimer, getTimerReading } = useTimer();
+  const [showResult, toggleShowResult] = useState(false);
+
   const {
     page,
     performAction,
@@ -54,15 +56,19 @@ const Demo = () => {
   });
 
   useEffect(() => {
-    isReadingPaused ? stopTimer() : startTimer();
-
-    if (bookStatus.current !== status) {
+    if (isReadingPaused) {
+      if (bookStatus.current === BookStatus.Completed) {
+        toggleShowResult(true);
+      }
       stopTimer();
+    } else {
+      startTimer();
     }
   }, [isReadingPaused]);
 
   const calculateResult = () => {
     const { correctEntry, incorrectEntry, fixedEntry } = getStats();
+    const readInSec = getTimerReading();
 
     const totalEntry = correctEntry + incorrectEntry + fixedEntry;
     const wpm = Math.round(totalEntry / 5 / (readInSec / 60));
@@ -110,7 +116,7 @@ const Demo = () => {
         </Typable>
       )}
 
-      {isReadingPaused && bookStatus.current === BookStatus.Completed && (
+      {showResult && (
         <div>
           <Stats data={calculateResult()} />
           <div className="d-grid gap-3 mt-5 col-6 mx-auto">
