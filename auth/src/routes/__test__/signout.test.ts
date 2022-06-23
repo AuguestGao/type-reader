@@ -14,9 +14,5 @@ it("clears a cookie after it signs a user out", async () => {
     })
     .expect(201);
 
-  // console.log(res1.get("Set-Cookie"));
-
   await request(app).post("/api/users/signout").expect(204);
-
-  // console.log(res2.get("Set-Cookie"));
 });

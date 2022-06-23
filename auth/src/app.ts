@@ -10,7 +10,7 @@ import { signinRouter } from "./routes/signin";
 import { signoutRouter } from "./routes/signout";
 import { currentuserRouter } from "./routes/current-user";
 import { forgotPasswordRouter } from "./routes/forgot-password";
-import { resetPasswordRouter} from './routes/reset-password'
+import { resetPasswordRouter } from "./routes/reset-password";
 
 const app = express();
 app.set("trust proxy", true);
@@ -18,7 +18,8 @@ app.use(json());
 app.use(
   cookieSession({
     signed: false,
-    secure: process.env.NODE_ENV !== "test", // only send cookies via https
+    secure: false,
+    // secure: process.env.NODE_ENV !== "test", // only send cookies via https
   })
 );
 

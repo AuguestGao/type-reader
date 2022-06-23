@@ -2,6 +2,7 @@ import { natsWrapper } from "./nats-wrapper";
 import { BookCreatedListener } from "./events/listeners/book-created-listener";
 
 const start = async () => {
+  console.log("starting up....");
   if (!process.env.NATS_CLUSTER_ID) {
     throw new Error("NATS_CLUSTER_ID must be defined.");
   }

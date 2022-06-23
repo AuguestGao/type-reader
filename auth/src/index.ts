@@ -4,6 +4,7 @@ import { natsWrapper } from "./nats-wrapper";
 import { app } from "./app";
 
 const start = async () => {
+  console.log("Starting up....");
   if (!process.env.NATS_CLUSTER_ID) {
     throw new Error("NATS_CLUSTER_ID must be defined.");
   }
