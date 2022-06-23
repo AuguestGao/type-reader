@@ -1,6 +1,5 @@
 export * from "./BGP";
 export * from "./BookForm";
-export * from "./DigitalClock";
 export * from "./Entry";
 export * from "./FormTextarea";
 export * from "./FromInput";
